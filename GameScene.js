@@ -1,3 +1,11 @@
+// TODO:
+// - timer
+// - ball bounce back affected by collide position
+//
+// - round start animation
+//
+// - smoother move to pointer
+
 class GameScene extends Phaser.Scene {
   constructor() {
     super('GameScene');
