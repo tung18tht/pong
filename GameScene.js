@@ -91,12 +91,12 @@ class GameScene extends Phaser.Scene {
     if (gameState.ball.body.onCeiling()) {
       gameState.p1ScoreText.setText(++gameState.p1Score);
       this.endRound();
-      this.time.addEvent({delay: 1500, callback: () => {this.startNewRound(false)}});
+      this.time.addEvent({delay: 1000, callback: () => {this.startNewRound(false)}});
 
     } else if (gameState.ball.body.onFloor()) {
       gameState.p2ScoreText.setText(++gameState.p2Score);
       this.endRound();
-      this.time.addEvent({delay: 1500, callback: () => {this.startNewRound(true)}});
+      this.time.addEvent({delay: 1000, callback: () => {this.startNewRound(true)}});
     }
   }
 
@@ -143,20 +143,26 @@ class GameScene extends Phaser.Scene {
     this.tweens.add({
       targets: gameState.paddle1,
       y: gameState.height - this.constants.paddleYOffset,
-      duration: 1000
+      duration: 1000,
+      ease: "Back",
+      easeParams: [3]
     });
 
     this.tweens.add({
       targets: gameState.paddle2,
       y: this.constants.paddleYOffset,
-      duration: 1000
+      duration: 1000,
+      ease: "Back",
+      easeParams: [3]
     });
 
     this.tweens.add({
       targets: gameState.ball,
       y: this.constants.centerY + (toSideP1 ? this.constants.ballRadius: -this.constants.ballRadius) * 5,
       duration: 1500,
-      delay: 1000
+      delay: 1000,
+      ease: "Elastic",
+      easeParams: [1, 0.5]
     });
 
     var ballInitialAngle = Math.random() * 30 + 30 + (Math.random() < 0.5 ? 0 : 90);
@@ -170,21 +176,7 @@ class GameScene extends Phaser.Scene {
     this.tweens.add({
       targets: [gameState.ball, gameState.paddle1, gameState.paddle2],
       alpha: 0,
-      duration: 1000,
-      delay: 500
-    });
-
-    this.tweens.add({
-      targets: gameState.paddle1,
-      y: gameState.height,
-      duration: 1000,
-      delay: 500
-    });
-
-    this.tweens.add({
-      targets: gameState.paddle2,
-      y: 0,
-      duration: 1000,
+      duration: 500,
       delay: 500
     });
   }
