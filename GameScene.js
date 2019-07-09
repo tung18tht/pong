@@ -91,12 +91,12 @@ class GameScene extends Phaser.Scene {
     if (gameState.ball.body.onCeiling()) {
       gameState.p1ScoreText.setText(++gameState.p1Score);
       this.endRound();
-      this.time.addEvent({delay: 1000, callback: () => {this.startNewRound(false)}});
+      this.time.addEvent({delay: 1500, callback: () => {this.startNewRound(false)}});
 
     } else if (gameState.ball.body.onFloor()) {
       gameState.p2ScoreText.setText(++gameState.p2Score);
       this.endRound();
-      this.time.addEvent({delay: 1000, callback: () => {this.startNewRound(true)}});
+      this.time.addEvent({delay: 1500, callback: () => {this.startNewRound(true)}});
     }
   }
 
@@ -110,6 +110,29 @@ class GameScene extends Phaser.Scene {
     gameState.paddle2.setAlpha(0);
     gameState.paddle1.setPosition(this.constants.centerX, gameState.height);
     gameState.paddle2.setPosition(this.constants.centerX, 0);
+
+    this.countdownNumber = 3;
+    gameState.countdownText.setText(this.countdownNumber);
+    gameState.countdownText.setAlpha(0);
+    gameState.countdownBackground.setAlpha(0);
+
+    this.tweens.add({
+      targets: [gameState.countdownBackground, gameState.countdownText],
+      alpha: 1,
+      duration: 500
+    });
+
+    this.tweens.add({
+      targets: [gameState.countdownBackground, gameState.countdownText],
+      alpha: 0,
+      duration: 500,
+      delay: 2500,
+      onComplete: () => {this.physics.resume()}
+    });
+
+    this.time.addEvent({
+      delay: 1000, repeat: 1, callback: () => {gameState.countdownText.setText(--this.countdownNumber);}
+    });
 
     this.tweens.add({
       targets: [gameState.ball, gameState.paddle1, gameState.paddle2],
@@ -131,27 +154,10 @@ class GameScene extends Phaser.Scene {
 
     this.tweens.add({
       targets: gameState.ball,
-      y: this.constants.centerY + (toSideP1 ? this.constants.ballRadius * 5 : -this.constants.ballRadius * 5),
+      y: this.constants.centerY + (toSideP1 ? this.constants.ballRadius: -this.constants.ballRadius) * 5,
       duration: 1500,
       delay: 1000
     });
-
-    this.countdownNumber = 3;
-    gameState.countdownText.setText(this.countdownNumber);
-    gameState.countdownBackground.setVisible(true);
-    gameState.countdownText.setVisible(true);
-
-    this.time.addEvent({ delay: 1000, repeat: 2, callback: () => {
-      if (--this.countdownNumber == 0) {
-        gameState.countdownBackground.setVisible(false);
-        gameState.countdownText.setVisible(false);
-
-        this.physics.resume();
-        return;
-      }
-
-      gameState.countdownText.setText(this.countdownNumber);
-    }});
 
     var ballInitialAngle = Math.random() * 30 + 30 + (Math.random() < 0.5 ? 0 : 90);
     var [velocityX, velocityY] = this.getVelocityXY(ballInitialAngle, this.constants.ballInitialVelocity, toSideP1);
@@ -164,19 +170,22 @@ class GameScene extends Phaser.Scene {
     this.tweens.add({
       targets: [gameState.ball, gameState.paddle1, gameState.paddle2],
       alpha: 0,
-      duration: 1000
+      duration: 1000,
+      delay: 500
     });
 
     this.tweens.add({
       targets: gameState.paddle1,
       y: gameState.height,
-      duration: 1000
+      duration: 1000,
+      delay: 500
     });
 
     this.tweens.add({
       targets: gameState.paddle2,
       y: 0,
-      duration: 1000
+      duration: 1000,
+      delay: 500
     });
   }
 
