@@ -1,4 +1,5 @@
 // TODO:
+// point animation
 // - effect
 //
 // Powers:
@@ -73,9 +74,10 @@ class GameScene extends Phaser.Scene {
     this.physics.add.collider(gameState.ball, gameState.paddle2, (ball, paddle) => {this.ballPaddleCollide(ball, paddle)});
 
     gameState.countdownBackground = this.add.graphics(0, 0);
-    gameState.countdownBackground.fillStyle(0x000000, 0.5);
+    gameState.countdownBackground.fillStyle(0x000000, 0.7);
     gameState.countdownBackground.fillRect(0, 0, gameState.width, gameState.height);
-    gameState.countdownText = this.add.text(this.constants.centerX, this.constants.centerY, this.countdownNumber, {fontSize: 120, color: '#FFFFFF'}).setOrigin(0.5, 0.5);
+    gameState.countdownP1 = this.add.text(this.constants.centerX, this.constants.centerY * 1.5, this.countdownNumber, {fontSize: 120, color: '#FFFFFF'}).setOrigin(0.5, 0.5);
+    gameState.countdownP2 = this.add.text(this.constants.centerX, this.constants.centerY * 0.5, this.countdownNumber, {fontSize: 120, color: '#FFFFFF'}).setOrigin(0.5, 0.5).setFlip(true, true);
 
     this.startNewRound(Math.random() < 0.5);
   }
@@ -112,18 +114,20 @@ class GameScene extends Phaser.Scene {
     gameState.paddle2.setPosition(this.constants.centerX, 0);
 
     this.countdownNumber = 3;
-    gameState.countdownText.setText(this.countdownNumber);
-    gameState.countdownText.setAlpha(0);
+    gameState.countdownP1.setText(this.countdownNumber);
+    gameState.countdownP2.setText(this.countdownNumber);
+    gameState.countdownP1.setAlpha(0);
+    gameState.countdownP2.setAlpha(0);
     gameState.countdownBackground.setAlpha(0);
 
     this.tweens.add({
-      targets: [gameState.countdownBackground, gameState.countdownText],
+      targets: [gameState.countdownBackground, gameState.countdownP1, gameState.countdownP2],
       alpha: 1,
       duration: 500
     });
 
     this.tweens.add({
-      targets: [gameState.countdownBackground, gameState.countdownText],
+      targets: [gameState.countdownBackground, gameState.countdownP1, gameState.countdownP2],
       alpha: 0,
       duration: 500,
       delay: 2500,
@@ -131,7 +135,10 @@ class GameScene extends Phaser.Scene {
     });
 
     this.time.addEvent({
-      delay: 1000, repeat: 1, callback: () => {gameState.countdownText.setText(--this.countdownNumber);}
+      delay: 1000, repeat: 1, callback: () => {
+        gameState.countdownP1.setText(--this.countdownNumber);
+        gameState.countdownP2.setText(this.countdownNumber);
+      }
     });
 
     this.tweens.add({
@@ -165,6 +172,13 @@ class GameScene extends Phaser.Scene {
       easeParams: [1, 0.5]
     });
 
+    this.tweens.add({
+      targets: [gameState.p1ScoreText, gameState.p2ScoreText],
+      alpha: 0.3,
+      duration: 2000,
+      delay: 5000
+    });
+
     var ballInitialAngle = Math.random() * 30 + 30 + (Math.random() < 0.5 ? 0 : 90);
     var [velocityX, velocityY] = this.getVelocityXY(ballInitialAngle, this.constants.ballInitialVelocity, toSideP1);
     gameState.ball.setVelocity(velocityX, velocityY);
@@ -172,12 +186,19 @@ class GameScene extends Phaser.Scene {
 
   endRound() {
     this.physics.pause();
+    this.tweens.killAll();
 
     this.tweens.add({
       targets: [gameState.ball, gameState.paddle1, gameState.paddle2],
       alpha: 0,
       duration: 500,
       delay: 500
+    });
+
+    this.tweens.add({
+      targets: [gameState.p1ScoreText, gameState.p2ScoreText],
+      alpha: 1,
+      duration: 500
     });
   }
 
