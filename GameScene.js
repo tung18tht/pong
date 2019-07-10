@@ -1,5 +1,4 @@
 // TODO:
-// point animation
 // - effect
 //
 // Powers:
@@ -73,6 +72,13 @@ class GameScene extends Phaser.Scene {
     this.physics.add.collider(gameState.ball, gameState.paddle1, (ball, paddle) => {this.ballPaddleCollide(ball, paddle)});
     this.physics.add.collider(gameState.ball, gameState.paddle2, (ball, paddle) => {this.ballPaddleCollide(ball, paddle)});
 
+    // gameState.particles = this.add.particles('ball');
+    // gameState.emitter = gameState.particles.createEmitter({
+    //   follow: gameState.ball,
+    //   lifespan: 300,
+
+    // });
+
     gameState.countdownBackground = this.add.graphics(0, 0);
     gameState.countdownBackground.fillStyle(0x000000, 0.7);
     gameState.countdownBackground.fillRect(0, 0, gameState.width, gameState.height);
@@ -110,6 +116,8 @@ class GameScene extends Phaser.Scene {
 
     gameState.paddle1.setAlpha(0);
     gameState.paddle2.setAlpha(0);
+    gameState.paddle1.setScale(1, 0);
+    gameState.paddle2.setScale(1, 0);
     gameState.paddle1.setPosition(this.constants.centerX, gameState.height);
     gameState.paddle2.setPosition(this.constants.centerX, 0);
 
@@ -145,6 +153,12 @@ class GameScene extends Phaser.Scene {
       targets: [gameState.ball, gameState.paddle1, gameState.paddle2],
       alpha: 1,
       duration: 1000
+    });
+
+    this.tweens.add({
+      targets: [gameState.paddle1, gameState.paddle2],
+      scaleY: 1,
+      duration: 500
     });
 
     this.tweens.add({
@@ -191,6 +205,13 @@ class GameScene extends Phaser.Scene {
     this.tweens.add({
       targets: [gameState.ball, gameState.paddle1, gameState.paddle2],
       alpha: 0,
+      duration: 500,
+      delay: 500
+    });
+
+    this.tweens.add({
+      targets: [gameState.paddle1, gameState.paddle2],
+      scaleY: 0,
       duration: 500,
       delay: 500
     });
