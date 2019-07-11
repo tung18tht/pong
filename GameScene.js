@@ -76,8 +76,8 @@ class GameScene extends Phaser.Scene {
 
     gameState.paddle1.emitters = gameState.particles.createEmitter({
       follow: gameState.paddle1,
-      lifespan: 500,
-      speed: 50,
+      lifespan: {min: 400, max: 600},
+      speed: {min: 40, max: 60},
       scale: 0.3,
       angle: {min: 30, max: 150},
       alpha: {start: 0.5, end: 0},
@@ -86,8 +86,8 @@ class GameScene extends Phaser.Scene {
 
     gameState.paddle2.emitters = gameState.particles.createEmitter({
       follow: gameState.paddle2,
-      lifespan: 500,
-      speed: 50,
+      lifespan: {min: 400, max: 600},
+      speed: {min: 40, max: 60},
       scale: 0.3,
       angle: {min: 210, max: 330},
       alpha: {start: 0.5, end: 0},
