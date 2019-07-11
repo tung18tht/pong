@@ -66,11 +66,32 @@ class GameScene extends Phaser.Scene {
     this.physics.add.collider(gameState.ball, gameState.paddle2, (ball, paddle) => {this.ballPaddleCollide(ball, paddle)});
 
     gameState.particles = this.add.particles('ball');
+
     gameState.particles.createEmitter({
       follow: gameState.ball,
       lifespan: 200,
       scale: {start: 1, end: 0},
       alpha: {start: 0.2, end: 0}
+    });
+
+    gameState.particles.createEmitter({
+      follow: gameState.paddle1,
+      lifespan: 500,
+      speed: 50,
+      scale: 0.3,
+      angle: {min: 30, max: 150},
+      alpha: {start: 0.5, end: 0},
+      emitZone: new Phaser.GameObjects.Particles.Zones.RandomZone(new Phaser.Geom.Line(-this.constants.paddleHalfWidth * 0.8, 0, this.constants.paddleHalfWidth * 0.8, 0))
+    });
+
+    gameState.particles.createEmitter({
+      follow: gameState.paddle2,
+      lifespan: 500,
+      speed: 50,
+      scale: 0.3,
+      angle: {min: 210, max: 330},
+      alpha: {start: 0.5, end: 0},
+      emitZone: new Phaser.GameObjects.Particles.Zones.RandomZone(new Phaser.Geom.Line(-this.constants.paddleHalfWidth * 0.8, 0, this.constants.paddleHalfWidth * 0.8, 0))
     });
 
     gameState.countdownBackground = this.add.graphics(0, 0);
