@@ -1,10 +1,3 @@
-// TODO:
-// - effect
-//
-// Powers:
-// - ball powers
-// - paddle powers
-
 class GameScene extends Phaser.Scene {
   constructor() {
     super('GameScene');
@@ -72,12 +65,13 @@ class GameScene extends Phaser.Scene {
     this.physics.add.collider(gameState.ball, gameState.paddle1, (ball, paddle) => {this.ballPaddleCollide(ball, paddle)});
     this.physics.add.collider(gameState.ball, gameState.paddle2, (ball, paddle) => {this.ballPaddleCollide(ball, paddle)});
 
-    // gameState.particles = this.add.particles('ball');
-    // gameState.emitter = gameState.particles.createEmitter({
-    //   follow: gameState.ball,
-    //   lifespan: 300,
-
-    // });
+    gameState.particles = this.add.particles('ball');
+    gameState.particles.createEmitter({
+      follow: gameState.ball,
+      lifespan: 200,
+      scale: {start: 1, end: 0},
+      alpha: {start: 0.2, end: 0}
+    });
 
     gameState.countdownBackground = this.add.graphics(0, 0);
     gameState.countdownBackground.fillStyle(0x000000, 0.7);
