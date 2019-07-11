@@ -14,7 +14,7 @@ class GameScene extends Phaser.Scene {
     this.constants.paddleMinX = this.constants.paddleHalfWidth;
     this.constants.paddleMaxX = gameState.width - this.constants.paddleHalfWidth;
     this.constants.paddleYOffset = this.constants.paddleHeight * 3;
-    this.constants.paddleStepPerMs = 1500 / 1000;
+    this.constants.paddleStepPerMs = 1000 / 1000;
     this.constants.paddleMaxBounceAngleAdjust = 20;
     this.constants.ballRadius = 15;
     this.constants.ballBounce = 1.02;
@@ -67,14 +67,14 @@ class GameScene extends Phaser.Scene {
 
     gameState.particles = this.add.particles('ball');
 
-    gameState.particles.createEmitter({
+    gameState.ball.emitters = gameState.particles.createEmitter({
       follow: gameState.ball,
       lifespan: 200,
       scale: {start: 1, end: 0},
       alpha: {start: 0.2, end: 0}
     });
 
-    gameState.particles.createEmitter({
+    gameState.paddle1.emitters = gameState.particles.createEmitter({
       follow: gameState.paddle1,
       lifespan: 500,
       speed: 50,
@@ -84,7 +84,7 @@ class GameScene extends Phaser.Scene {
       emitZone: new Phaser.GameObjects.Particles.Zones.RandomZone(new Phaser.Geom.Line(-this.constants.paddleHalfWidth * 0.8, 0, this.constants.paddleHalfWidth * 0.8, 0))
     });
 
-    gameState.particles.createEmitter({
+    gameState.paddle2.emitters = gameState.particles.createEmitter({
       follow: gameState.paddle2,
       lifespan: 500,
       speed: 50,
@@ -127,14 +127,19 @@ class GameScene extends Phaser.Scene {
     this.physics.pause();
 
     gameState.ball.setAlpha(0);
-    gameState.ball.setPosition(this.constants.centerX, this.constants.centerY);
-
     gameState.paddle1.setAlpha(0);
     gameState.paddle2.setAlpha(0);
-    gameState.paddle1.setScale(1, 0);
-    gameState.paddle2.setScale(1, 0);
+
+    gameState.ball.setPosition(this.constants.centerX, this.constants.centerY);
     gameState.paddle1.setPosition(this.constants.centerX, gameState.height);
     gameState.paddle2.setPosition(this.constants.centerX, 0);
+
+    gameState.ball.emitters.stop();
+    gameState.paddle1.emitters.stop();
+    gameState.paddle2.emitters.stop();
+
+    gameState.paddle1.setScale(1, 0);
+    gameState.paddle2.setScale(1, 0);
 
     this.countdownNumber = 3;
     gameState.countdownP1.setText(this.countdownNumber);
@@ -167,7 +172,12 @@ class GameScene extends Phaser.Scene {
     this.tweens.add({
       targets: [gameState.ball, gameState.paddle1, gameState.paddle2],
       alpha: 1,
-      duration: 1000
+      duration: 1000,
+      onComplete: () => {
+        gameState.ball.emitters.start();
+        gameState.paddle1.emitters.start();
+        gameState.paddle2.emitters.start();
+      }
     });
 
     this.tweens.add({
@@ -236,6 +246,10 @@ class GameScene extends Phaser.Scene {
       alpha: 1,
       duration: 500
     });
+
+    gameState.ball.emitters.stop();
+    gameState.paddle1.emitters.stop();
+    gameState.paddle2.emitters.stop();
   }
 
   controlPaddle(paddle, targetX, delta) {
