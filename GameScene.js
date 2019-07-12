@@ -5,7 +5,7 @@ class GameScene extends Phaser.Scene {
     this.constants = {};
     this.constants.centerX = gameState.width / 2;
     this.constants.centerY = gameState.height / 2;
-    this.constants.pointsToWin = 7;
+    this.constants.pointsToWin = 3;
 
     this.constants.paddleWidth = 120;
     this.constants.paddleHeight = 15;
@@ -332,17 +332,18 @@ class GameScene extends Phaser.Scene {
     });
 
     this.tweens.add({
-      targets: [this.objects.ball, this.objects.paddle1, this.objects.paddle2],
-      alpha: 0,
+      targets: [this.objects.paddle1, this.objects.paddle2],
+      scaleY: 0,
       duration: 500,
       delay: 500
     });
 
     this.tweens.add({
-      targets: [this.objects.paddle1, this.objects.paddle2],
-      scaleY: 0,
+      targets: [this.objects.ball, this.objects.paddle1, this.objects.paddle2],
+      alpha: 0,
       duration: 500,
-      delay: 500
+      delay: 500,
+      onComplete: () => {this.events.emit("roundEnded")}
     });
   }
 
@@ -378,6 +379,7 @@ class GameScene extends Phaser.Scene {
       delay: 500
     });
 
+    this.objects.resultBackground = this.add.rectangle(0, 0, gameState.width, gameState.height, 0x000000, 0.7).setOrigin(0, 0).setAlpha(0);
     this.objects.p1Result = this.add.text(this.constants.centerX, this.constants.centerY * 1.5, p1Win ? "Win" : "Lose", {fontSize: 120, color: '#FFFFFF'}).setOrigin(0.5, 0.5).setAlpha(0);
     this.objects.p2Result = this.add.text(this.constants.centerX, this.constants.centerY * 0.5, p1Win ? "Lose" : "Win", {fontSize: 120, color: '#FFFFFF'}).setOrigin(0.5, 0.5).setFlip(true, true).setAlpha(0);
 
@@ -398,7 +400,7 @@ class GameScene extends Phaser.Scene {
     });
 
     this.tweens.add({
-      targets: [this.objects.countdownBackground, this.objects.p1Result, this.objects.p2Result, this.objects.endMatchButton, this.objects.endMatchIcon],
+      targets: [this.objects.resultBackground, this.objects.p1Result, this.objects.p2Result, this.objects.endMatchButton, this.objects.endMatchIcon],
       alpha: 1,
       duration: 500,
       delay: 1000,
@@ -436,21 +438,21 @@ class GameScene extends Phaser.Scene {
   }
 
   ballWorldCollide(ball, up, down, left, right) {
-    if (up) {
-      this.objects.p1ScoreText.setText(++this.variables.p1Score);
-      if (this.variables.p1Score == this.constants.pointsToWin) {
-        this.endMatch(true);
+    if (up || down) {
+      var lastPoint;
+      if (up) {
+        this.objects.p1ScoreText.setText(++this.variables.p1Score);
+        lastPoint = this.variables.p1Score == this.constants.pointsToWin;
       } else {
-        this.endRound();
-        this.time.addEvent({delay: 1000, callback: () => {this.startNewRound(false)}});
+        this.objects.p2ScoreText.setText(++this.variables.p2Score);
+        lastPoint = this.variables.p2Score == this.constants.pointsToWin;
       }
-    } else if (down) {
-      this.objects.p2ScoreText.setText(++this.variables.p2Score);
-      if (this.variables.p2Score == this.constants.pointsToWin) {
-        this.endMatch(false);
+
+      if (lastPoint) {
+        this.endMatch(up);
       } else {
         this.endRound();
-        this.time.addEvent({delay: 1000, callback: () => {this.startNewRound(true)}});
+        this.events.once("roundEnded", () => {this.startNewRound(down)});
       }
     }
   }
