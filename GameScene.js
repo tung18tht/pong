@@ -5,6 +5,7 @@ class GameScene extends Phaser.Scene {
     this.constants = {};
     this.constants.centerX = gameState.width / 2;
     this.constants.centerY = gameState.height / 2;
+    this.constants.pointsToWin = 7;
 
     this.constants.paddleWidth = 120;
     this.constants.paddleHeight = 15;
@@ -24,16 +25,16 @@ class GameScene extends Phaser.Scene {
     this.constants.ballPosMinAngle = this.constants.ballAngleLimit;
     this.constants.ballNegMaxAngle = - this.constants.ballPosMinAngle;
     this.constants.ballNegMinAngle = - this.constants.ballPosMaxAngle;
+  }
 
+  preload() {
     this.variables = {};
     this.variables.p1Score = 0;
     this.variables.p2Score = 0;
     this.variables.countdownNumber = 3;
 
     this.objects = {};
-  }
 
-  preload() {
     var paddleGraphic = this.add.graphics(0, 0);
     paddleGraphic.fillStyle(0xFFFFFF);
     paddleGraphic.fillRect(0, 0, this.constants.paddleWidth, this.constants.paddleHeight);
@@ -54,8 +55,8 @@ class GameScene extends Phaser.Scene {
   create() {
     this.add.rectangle(0, this.constants.centerY - 1, gameState.width, 2, 0x888888).setOrigin(0, 0);
 
-    this.objects.p1ScoreText = this.add.text(this.constants.centerX, this.constants.centerY + 50, this.variables.p1Score, {fontSize: 80, color: '#888888'}).setOrigin(0.5, 0.5);
-    this.objects.p2ScoreText = this.add.text(this.constants.centerX, this.constants.centerY - 50, this.variables.p2Score, {fontSize: 80, color: '#888888'}).setOrigin(0.5, 0.5).setFlip(true, true);
+    this.objects.p1ScoreText = this.add.text(this.constants.centerX, this.constants.centerY + 50, this.variables.p1Score, {fontSize: 80, color: '#AAAAAA'}).setOrigin(0.5, 0.5);
+    this.objects.p2ScoreText = this.add.text(this.constants.centerX, this.constants.centerY - 50, this.variables.p2Score, {fontSize: 80, color: '#AAAAAA'}).setOrigin(0.5, 0.5).setFlip(true, true);
 
     this.objects.paddle1 = this.physics.add.sprite(this.constants.centerX, gameState.height - this.constants.paddleYOffset, 'paddle').setOrigin(0.5, 0.5);
     this.objects.paddle2 = this.physics.add.sprite(this.constants.centerX, this.constants.paddleYOffset, 'paddle').setOrigin(0.5, 0.5);
@@ -320,6 +321,16 @@ class GameScene extends Phaser.Scene {
     this.tweens.killAll();
     this.time.removeAllEvents();
 
+    this.objects.ball.emitters.stop();
+    this.objects.paddle1.emitters.stop();
+    this.objects.paddle2.emitters.stop();
+
+    this.tweens.add({
+      targets: [this.objects.p1ScoreText, this.objects.p2ScoreText],
+      alpha: 1,
+      duration: 500
+    });
+
     this.tweens.add({
       targets: [this.objects.ball, this.objects.paddle1, this.objects.paddle2],
       alpha: 0,
@@ -333,6 +344,19 @@ class GameScene extends Phaser.Scene {
       duration: 500,
       delay: 500
     });
+  }
+
+  endMatch(p1Win) {
+    this.physics.pause();
+    this.tweens.killAll();
+    this.time.removeAllEvents();
+
+    this.objects.ball.emitters.stop();
+    this.objects.paddle1.emitters.stop();
+    this.objects.paddle2.emitters.stop();
+
+    this.objects.p1ScoreText.setDepth(1);
+    this.objects.p2ScoreText.setDepth(1);
 
     this.tweens.add({
       targets: [this.objects.p1ScoreText, this.objects.p2ScoreText],
@@ -340,20 +364,94 @@ class GameScene extends Phaser.Scene {
       duration: 500
     });
 
-    this.objects.ball.emitters.stop();
-    this.objects.paddle1.emitters.stop();
-    this.objects.paddle2.emitters.stop();
+    this.tweens.add({
+      targets: [this.objects.ball, p1Win ? this.objects.paddle2 : this.objects.paddle1],
+      alpha: 0,
+      duration: 500,
+      delay: 500
+    });
+
+    this.tweens.add({
+      targets: p1Win ? this.objects.paddle2 : this.objects.paddle1,
+      scaleY: 0,
+      duration: 500,
+      delay: 500
+    });
+
+    this.objects.p1Result = this.add.text(this.constants.centerX, this.constants.centerY * 1.5, p1Win ? "Win" : "Lose", {fontSize: 120, color: '#FFFFFF'}).setOrigin(0.5, 0.5).setAlpha(0);
+    this.objects.p2Result = this.add.text(this.constants.centerX, this.constants.centerY * 0.5, p1Win ? "Lose" : "Win", {fontSize: 120, color: '#FFFFFF'}).setOrigin(0.5, 0.5).setFlip(true, true).setAlpha(0);
+
+    this.objects.endMatchButton = this.add.rectangle(gameState.width - 50, this.constants.centerY, 50, 50).setOrigin(0.5, 0.5).setStrokeStyle(2, 0xFFFFFF).setInteractive().disableInteractive().setAlpha(0);
+    this.objects.endMatchIcon = this.add.image(gameState.width - 50, this.constants.centerY, 'quit').setOrigin(0.5, 0.5).setDisplaySize(40, 40).setAlpha(0);
+
+    this.objects.endMatchButton.on('pointerover', () => { this.objects.endMatchButton.setScale(1.1) });
+    this.objects.endMatchButton.on('pointerout', () => { this.objects.endMatchButton.setScale(1) });
+    this.objects.endMatchButton.once('pointerup', () => {
+      this.tweens.add({
+        targets: this.add.rectangle(0, 0, gameState.width, gameState.height, 0x000000, 0).setOrigin(0, 0).setDepth(2),
+        fillAlpha: 1,
+        duration: 500,
+        onComplete: () => {
+          this.scene.start("MenuScene");
+        }
+      });
+    });
+
+    this.tweens.add({
+      targets: [this.objects.countdownBackground, this.objects.p1Result, this.objects.p2Result, this.objects.endMatchButton, this.objects.endMatchIcon],
+      alpha: 1,
+      duration: 500,
+      delay: 1000,
+      onComplete: () => {this.objects.endMatchButton.setInteractive()}
+    });
+
+    this.tweens.add({
+      targets: p1Win ? this.objects.paddle1 : this.objects.paddle2,
+      x: this.constants.centerX,
+      y: this.constants.centerY,
+      scaleX: 2,
+      scaleY: 2,
+      duration: 1000,
+      delay: 1000,
+      onComplete: () => {
+        this.objects.particles.createEmitter({
+          x: this.constants.centerX,
+          y: this.constants.centerY,
+          lifespan: {min: 1000, max: 2000},
+          speed: {min: 200, max: 400},
+          quantity: 5,
+          scale: 0.5,
+          alpha: {start: 1, end: 0}
+        });
+      }
+    });
+
+    this.tweens.add({
+      targets: p1Win ? this.objects.paddle1 : this.objects.paddle2,
+      angle: 360,
+      repeat: -1,
+      duration: 1000,
+      delay: 1000
+    });
   }
 
   ballWorldCollide(ball, up, down, left, right) {
     if (up) {
       this.objects.p1ScoreText.setText(++this.variables.p1Score);
-      this.endRound();
-      this.time.addEvent({delay: 1000, callback: () => {this.startNewRound(false)}});
+      if (this.variables.p1Score == this.constants.pointsToWin) {
+        this.endMatch(true);
+      } else {
+        this.endRound();
+        this.time.addEvent({delay: 1000, callback: () => {this.startNewRound(false)}});
+      }
     } else if (down) {
       this.objects.p2ScoreText.setText(++this.variables.p2Score);
-      this.endRound();
-      this.time.addEvent({delay: 1000, callback: () => {this.startNewRound(true)}});
+      if (this.variables.p2Score == this.constants.pointsToWin) {
+        this.endMatch(false);
+      } else {
+        this.endRound();
+        this.time.addEvent({delay: 1000, callback: () => {this.startNewRound(true)}});
+      }
     }
   }
 
