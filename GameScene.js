@@ -48,6 +48,7 @@ class GameScene extends Phaser.Scene {
 
     this.load.image('play', 'assets/play.png');
     this.load.image('quit', 'assets/quit.png');
+    this.load.image('pause', 'assets/pause.png');
   }
 
   create() {
@@ -108,7 +109,76 @@ class GameScene extends Phaser.Scene {
     this.objects.countdownP1 = this.add.text(this.constants.centerX, this.constants.centerY * 1.5, this.variables.countdownNumber, {fontSize: 120, color: '#FFFFFF'}).setOrigin(0.5, 0.5);
     this.objects.countdownP2 = this.add.text(this.constants.centerX, this.constants.centerY * 0.5, this.variables.countdownNumber, {fontSize: 120, color: '#FFFFFF'}).setOrigin(0.5, 0.5).setFlip(true, true);
 
+    this.objects.pauseButton = this.add.rectangle(gameState.width - 50, this.constants.centerY, 50, 50).setOrigin(0.5, 0.5).setStrokeStyle(2, 0xFFFFFF).setInteractive();
+    this.objects.pauseIcon = this.add.image(gameState.width - 50, this.constants.centerY, 'pause').setOrigin(0.5, 0.5).setDisplaySize(40, 40);
+
+    this.objects.pauseButton.on('pointerover', () => {this.objects.pauseButton.setScale(1.1)});
+    this.objects.pauseButton.on('pointerout', () => {this.objects.pauseButton.setScale(1)});
+    this.objects.pauseButton.on('pointerup', () => {
+      this.objects.pauseButton.disableInteractive();
+      this.pause();
+    });
+
+    this.objects.pauseBackgound = this.add.rectangle(0, 0, gameState.width, gameState.height, 0x000000).setOrigin(0, 0).setAlpha(0);
+    this.objects.pauseTextP1 = this.add.text(this.constants.centerX, this.constants.centerY * 1.5, "paused", { fontSize: 40, color: '#FFFFFF' }).setOrigin(0.5, 0.5).setAlpha(0);
+    this.objects.pauseTextP2 = this.add.text(this.constants.centerX, this.constants.centerY * 0.5, "paused", { fontSize: 40, color: '#FFFFFF' }).setOrigin(0.5, 0.5).setFlip(true, true).setAlpha(0);
+    this.objects.continueButton = this.add.rectangle(this.constants.centerX - 90, this.constants.centerY, 120, 120).setOrigin(0.5, 0.5).setStrokeStyle(8, 0xFFFFFF).setInteractive().disableInteractive().setAlpha(0);
+    this.objects.continueIcon = this.add.image(this.constants.centerX - 90, this.constants.centerY, 'play').setOrigin(0.5, 0.5).setDisplaySize(80, 80).setAlpha(0);
+    this.objects.quitButton = this.add.rectangle(this.constants.centerX + 90, this.constants.centerY, 120, 120).setOrigin(0.5, 0.5).setStrokeStyle(8, 0xFFFFFF).setInteractive().disableInteractive().setAlpha(0);
+    this.objects.quitIcon = this.add.image(this.constants.centerX + 90, this.constants.centerY, 'quit').setOrigin(0.5, 0.5).setDisplaySize(80, 80).setAlpha(0);
+
+    this.objects.continueButton.on('pointerover', () => {this.objects.continueButton.setScale(1.1)});
+    this.objects.continueButton.on('pointerout', () => {this.objects.continueButton.setScale(1)});
+    this.objects.continueButton.on('pointerup', () => {this.continue()});
+
+    this.objects.quitButton.on('pointerover', () => { this.objects.quitButton.setScale(1.1) });
+    this.objects.quitButton.on('pointerout', () => { this.objects.quitButton.setScale(1) });
+    this.objects.quitButton.on('pointerup', () => {this.quit()});
+
     this.startNewRound(Math.random() < 0.5);
+  }
+
+  pause() {
+    this.endRound();
+
+    this.tweens.add({
+      targets: [this.objects.pauseBackgound, this.objects.pauseTextP1, this.objects.pauseTextP2, this.objects.continueButton, this.objects.continueIcon, this.objects.quitButton, this.objects.quitIcon],
+      alpha: 1,
+      duration: 500,
+      onComplete: () => {
+        this.objects.continueButton.setInteractive();
+        this.objects.quitButton.setInteractive();
+      }
+    });
+  }
+
+  continue() {
+    this.objects.continueButton.disableInteractive();
+    this.objects.quitButton.disableInteractive();
+
+    this.tweens.add({
+      targets: [this.objects.pauseTextP1, this.objects.pauseTextP2, this.objects.continueButton, this.objects.continueIcon, this.objects.quitButton, this.objects.quitIcon],
+      alpha: 0,
+      duration: 500,
+      onComplete: () => {
+        this.objects.pauseBackgound.setAlpha(0);
+        this.startNewRound(this.objects.ball.body.velocity.y > 0);
+      }
+    });
+  }
+
+  quit() {
+    this.objects.continueButton.disableInteractive();
+    this.objects.quitButton.disableInteractive();
+
+    this.tweens.add({
+      targets: this.add.rectangle(0, 0, gameState.width, gameState.height, 0x000000, 0).setOrigin(0, 0),
+      fillAlpha: 1,
+      duration: 500,
+      onComplete: () => {
+        this.scene.start("MenuScene");
+      }
+    });
   }
 
   update(time, delta) {
@@ -159,21 +229,28 @@ class GameScene extends Phaser.Scene {
     this.variables.countdownNumber = 3;
     this.objects.countdownP1.setText(this.variables.countdownNumber);
     this.objects.countdownP2.setText(this.variables.countdownNumber);
+
+    this.objects.countdownBackground.setAlpha(0);
     this.objects.countdownP1.setAlpha(0);
     this.objects.countdownP2.setAlpha(0);
-    this.objects.countdownBackground.setAlpha(0);
+
+    this.objects.pauseIcon.setAlpha(0);
+    this.objects.pauseButton.setAlpha(0);
+    this.objects.pauseButton.disableInteractive();
 
     this.tweens.add({
-      targets: [this.objects.countdownBackground, this.objects.countdownP1, this.objects.countdownP2],
+      targets: [this.objects.countdownBackground, this.objects.countdownP1, this.objects.countdownP2, this.objects.pauseIcon, this.objects.pauseButton],
       alpha: 1,
-      duration: 500
+      duration: 500,
+      onComplete: () => {this.objects.pauseButton.setInteractive()}
     });
 
     this.tweens.add({
-      targets: [this.objects.countdownBackground, this.objects.countdownP1, this.objects.countdownP2],
+      targets: [this.objects.countdownBackground, this.objects.countdownP1, this.objects.countdownP2, this.objects.pauseIcon, this.objects.pauseButton],
       alpha: 0,
       duration: 500,
       delay: 2500,
+      onStart: () => {this.objects.pauseButton.disableInteractive()},
       onComplete: () => {this.physics.resume()}
     });
 
@@ -241,6 +318,7 @@ class GameScene extends Phaser.Scene {
   endRound() {
     this.physics.pause();
     this.tweens.killAll();
+    this.time.removeAllEvents();
 
     this.tweens.add({
       targets: [this.objects.ball, this.objects.paddle1, this.objects.paddle2],
