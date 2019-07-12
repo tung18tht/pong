@@ -66,11 +66,14 @@ class GameScene extends Phaser.Scene {
     this.objects.paddle2.setImmovable(true);
 
     this.objects.ball = this.physics.add.sprite(this.constants.centerX, this.constants.centerY, 'ball').setOrigin(0.5, 0.5);
-    this.objects.ball.setCollideWorldBounds(true);
     this.objects.ball.setBounce(1, 1);
 
     this.physics.add.collider(this.objects.ball, this.objects.paddle1, (ball, paddle) => {this.ballPaddleCollide(ball, paddle)});
     this.physics.add.collider(this.objects.ball, this.objects.paddle2, (ball, paddle) => {this.ballPaddleCollide(ball, paddle)});
+
+    this.objects.ball.setCollideWorldBounds(true);
+    this.objects.ball.body.onWorldBounds = true;
+    this.physics.world.on('worldbounds', (ball, up, down, left, right) => {this.ballWorldCollide(ball, up, down, left, right)});
 
     this.objects.particles = this.add.particles('ball');
 
@@ -101,9 +104,7 @@ class GameScene extends Phaser.Scene {
       emitZone: new Phaser.GameObjects.Particles.Zones.RandomZone(new Phaser.Geom.Line(-this.constants.paddleHalfWidth * 0.8, 0, this.constants.paddleHalfWidth * 0.8, 0))
     });
 
-    this.objects.countdownBackground = this.add.graphics(0, 0);
-    this.objects.countdownBackground.fillStyle(0x000000, 0.7);
-    this.objects.countdownBackground.fillRect(0, 0, gameState.width, gameState.height);
+    this.objects.countdownBackground = this.add.rectangle(0, 0, gameState.width, gameState.height, 0x000000, 0.7).setOrigin(0, 0);
     this.objects.countdownP1 = this.add.text(this.constants.centerX, this.constants.centerY * 1.5, this.variables.countdownNumber, {fontSize: 120, color: '#FFFFFF'}).setOrigin(0.5, 0.5);
     this.objects.countdownP2 = this.add.text(this.constants.centerX, this.constants.centerY * 0.5, this.variables.countdownNumber, {fontSize: 120, color: '#FFFFFF'}).setOrigin(0.5, 0.5).setFlip(true, true);
 
@@ -117,16 +118,23 @@ class GameScene extends Phaser.Scene {
 
     this.controlPaddle(this.objects.paddle1, this.input.x, delta);
     this.controlPaddle(this.objects.paddle2, this.objects.ball.x, delta);
+  }
 
-    if (this.objects.ball.body.onCeiling()) {
-      this.objects.p1ScoreText.setText(++this.variables.p1Score);
-      this.endRound();
-      this.time.addEvent({delay: 1000, callback: () => {this.startNewRound(false)}});
+  controlPaddle(paddle, targetX, delta) {
+    var diff = paddle.x - targetX;
+    var step = this.constants.paddleStepPerMs * delta;
+    if (diff < -step) {
+      paddle.x += step;
+    } else if (diff > step) {
+      paddle.x -= step;
+    } else {
+      paddle.x = targetX;
+    }
 
-    } else if (this.objects.ball.body.onFloor()) {
-      this.objects.p2ScoreText.setText(++this.variables.p2Score);
-      this.endRound();
-      this.time.addEvent({delay: 1000, callback: () => {this.startNewRound(true)}});
+    if (paddle.x > this.constants.paddleMaxX) {
+      paddle.x = this.constants.paddleMaxX;
+    } else if (paddle.x < this.constants.paddleMinX) {
+      paddle.x = this.constants.paddleMinX;
     }
   }
 
@@ -211,7 +219,7 @@ class GameScene extends Phaser.Scene {
 
     this.tweens.add({
       targets: this.objects.ball,
-      y: this.constants.centerY + (toSideP1 ? this.constants.ballRadius: -this.constants.ballRadius) * 5,
+      y: this.constants.centerY + (toSideP1 ? this.constants.ballRadius : -this.constants.ballRadius) * 5,
       duration: 1500,
       delay: 1000,
       ease: "Elastic",
@@ -259,21 +267,15 @@ class GameScene extends Phaser.Scene {
     this.objects.paddle2.emitters.stop();
   }
 
-  controlPaddle(paddle, targetX, delta) {
-    var diff = paddle.x - targetX;
-    var step = this.constants.paddleStepPerMs * delta;
-    if (diff < -step) {
-      paddle.x += step;
-    } else if (diff > step) {
-      paddle.x -= step;
-    } else {
-      paddle.x = targetX;
-    }
-
-    if (paddle.x > this.constants.paddleMaxX) {
-      paddle.x = this.constants.paddleMaxX;
-    } else if (paddle.x < this.constants.paddleMinX) {
-      paddle.x = this.constants.paddleMinX;
+  ballWorldCollide(ball, up, down, left, right) {
+    if (up) {
+      this.objects.p1ScoreText.setText(++this.variables.p1Score);
+      this.endRound();
+      this.time.addEvent({delay: 1000, callback: () => {this.startNewRound(false)}});
+    } else if (down) {
+      this.objects.p2ScoreText.setText(++this.variables.p2Score);
+      this.endRound();
+      this.time.addEvent({delay: 1000, callback: () => {this.startNewRound(true)}});
     }
   }
 
