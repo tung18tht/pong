@@ -1,5 +1,3 @@
-// ball class
-
 class GameScene extends Phaser.Scene {
   constructor() {
     super('GameScene');
@@ -60,33 +58,10 @@ class GameScene extends Phaser.Scene {
     this.objects.p1ScoreText = this.add.text(this.constants.centerX, this.constants.centerY + 50, this.variables.p1Score, {fontSize: 80, color: '#AAAAAA'}).setOrigin(0.5, 0.5);
     this.objects.p2ScoreText = this.add.text(this.constants.centerX, this.constants.centerY - 50, this.variables.p2Score, {fontSize: 80, color: '#AAAAAA'}).setOrigin(0.5, 0.5).setFlip(true, true);
 
-    this.objects.paddle1 = this.physics.add.sprite(this.constants.centerX, gameState.height - this.constants.paddleYOffset, 'paddle').setOrigin(0.5, 0.5);
-    this.objects.paddle2 = this.physics.add.sprite(this.constants.centerX, this.constants.paddleYOffset, 'paddle').setOrigin(0.5, 0.5);
-
-    this.objects.paddle1.setCollideWorldBounds(true);
-    this.objects.paddle2.setCollideWorldBounds(true);
-
-    this.objects.paddle1.setImmovable(true);
-    this.objects.paddle2.setImmovable(true);
-
-    this.objects.ball = this.physics.add.sprite(this.constants.centerX, this.constants.centerY, 'ball').setOrigin(0.5, 0.5);
-    this.objects.ball.setBounce(1, 1);
-
-    this.physics.add.collider(this.objects.ball, this.objects.paddle1, (ball, paddle) => {this.ballPaddleCollide(ball, paddle)});
-    this.physics.add.collider(this.objects.ball, this.objects.paddle2, (ball, paddle) => {this.ballPaddleCollide(ball, paddle)});
-
-    this.objects.ball.setCollideWorldBounds(true);
-    this.objects.ball.body.onWorldBounds = true;
-    this.physics.world.on('worldbounds', (ball, up, down, left, right) => {this.ballWorldCollide(ball, up, down, left, right)});
+    this.objects.paddle1 = this.physics.add.sprite(this.constants.centerX, gameState.height - this.constants.paddleYOffset, 'paddle').setOrigin(0.5, 0.5).setCollideWorldBounds(true).setImmovable(true);
+    this.objects.paddle2 = this.physics.add.sprite(this.constants.centerX, this.constants.paddleYOffset, 'paddle').setOrigin(0.5, 0.5).setCollideWorldBounds(true).setImmovable(true);
 
     this.objects.particles = this.add.particles('ball');
-
-    this.objects.ball.trail = this.objects.particles.createEmitter({
-      follow: this.objects.ball,
-      lifespan: 200,
-      scale: {start: 1, end: 0},
-      alpha: {start: 0.2, end: 0}
-    });
 
     this.objects.paddle1.trail = this.objects.particles.createEmitter({
       follow: this.objects.paddle1,
@@ -159,6 +134,10 @@ class GameScene extends Phaser.Scene {
       scale: 0.5,
       alpha: {start: 0.5, end: 0}
     });
+
+    this.objects.ball = new Ball(this, this.constants.centerX, this.constants.centerY);
+
+    this.physics.world.on('worldbounds', (ball, up, down, left, right) => {this.ballWorldCollide(ball, up, down, left, right)});
 
     this.objects.countdownBackground = this.add.rectangle(0, 0, gameState.width, gameState.height, 0x000000, 0.7).setOrigin(0, 0);
     this.objects.countdownP1 = this.add.text(this.constants.centerX, this.constants.centerY * 1.5, this.variables.countdownNumber, {fontSize: 120, color: '#FFFFFF'}).setOrigin(0.5, 0.5);
