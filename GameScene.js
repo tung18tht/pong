@@ -546,6 +546,22 @@ class GameScene extends Phaser.Scene {
     ball.setVelocity(velocityX, velocityY);
   }
 
+  ballPaddleOverlap(ball, paddle) {
+    if (ball.x > paddle.x) {
+      if (ball.body.velocity.x < 0) {
+        this.objects.worldLeftCollisionEffect.explode(10, paddle.x + this.constants.paddleHalfWidth, ball.y);
+        ball.setVelocityX(-ball.body.velocity.x);
+      }
+      ball.x = paddle.x + this.constants.paddleHalfWidth + this.constants.ballRadius;
+    } else {
+      if (ball.body.velocity.x > 0) {
+        this.objects.worldRightCollisionEffect.explode(10, paddle.x - this.constants.paddleHalfWidth, ball.y);
+        ball.setVelocityX(-ball.body.velocity.x);
+      }
+      ball.x = paddle.x - this.constants.paddleHalfWidth - this.constants.ballRadius;
+    }
+  }
+
   getAngleVelocity(velocityX, velocityY) {
     var velocity = Math.sqrt((velocityX ** 2) + (velocityY ** 2));
     var angle = Math.atan2(velocityY, velocityX) * 180 / Math.PI;

@@ -19,5 +19,8 @@ class Ball extends Phaser.Physics.Arcade.Sprite {
 
     scene.physics.add.collider(this, scene.objects.paddle1, (ball, paddle) => {scene.ballPaddleCollide(ball, paddle)});
     scene.physics.add.collider(this, scene.objects.paddle2, (ball, paddle) => {scene.ballPaddleCollide(ball, paddle)});
+
+    scene.physics.add.overlap(this, scene.objects.paddle1, (ball, paddle) => {scene.ballPaddleOverlap(ball, paddle)});
+    scene.physics.add.overlap(this, scene.objects.paddle2, (ball, paddle) => {scene.ballPaddleOverlap(ball, paddle)});
   }
 }
