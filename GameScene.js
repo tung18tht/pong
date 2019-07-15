@@ -146,16 +146,16 @@ class GameScene extends Phaser.Scene {
 
     this.objects.worldUpCollisionEffect = this.objects.particles.createEmitter({
       on: false,
-      lifespan: 500,
-      speed: 500,
+      lifespan: {min: 450, max: 550},
+      speed: {min: 450, max: 550},
       scale: 0.5,
       alpha: {start: 0.5, end: 0}
     });
 
     this.objects.worldDownCollisionEffect = this.objects.particles.createEmitter({
       on: false,
-      lifespan: 500,
-      speed: 500,
+      lifespan: {min: 450, max: 550},
+      speed: {min: 450, max: 550},
       scale: 0.5,
       alpha: {start: 0.5, end: 0}
     });
