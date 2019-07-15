@@ -1,3 +1,5 @@
+// ball class
+
 class GameScene extends Phaser.Scene {
   constructor() {
     super('GameScene');
@@ -79,14 +81,14 @@ class GameScene extends Phaser.Scene {
 
     this.objects.particles = this.add.particles('ball');
 
-    this.objects.ball.emitters = this.objects.particles.createEmitter({
+    this.objects.ball.trail = this.objects.particles.createEmitter({
       follow: this.objects.ball,
       lifespan: 200,
       scale: {start: 1, end: 0},
       alpha: {start: 0.2, end: 0}
     });
 
-    this.objects.paddle1.emitters = this.objects.particles.createEmitter({
+    this.objects.paddle1.trail = this.objects.particles.createEmitter({
       follow: this.objects.paddle1,
       lifespan: {min: 400, max: 600},
       speed: {min: 40, max: 60},
@@ -96,7 +98,7 @@ class GameScene extends Phaser.Scene {
       emitZone: new Phaser.GameObjects.Particles.Zones.RandomZone(new Phaser.Geom.Line(-this.constants.paddleHalfWidth * 0.8, 0, this.constants.paddleHalfWidth * 0.8, 0))
     });
 
-    this.objects.paddle2.emitters = this.objects.particles.createEmitter({
+    this.objects.paddle2.trail = this.objects.particles.createEmitter({
       follow: this.objects.paddle2,
       lifespan: {min: 400, max: 600},
       speed: {min: 40, max: 60},
@@ -104,6 +106,58 @@ class GameScene extends Phaser.Scene {
       angle: {min: 210, max: 330},
       alpha: {start: 0.5, end: 0},
       emitZone: new Phaser.GameObjects.Particles.Zones.RandomZone(new Phaser.Geom.Line(-this.constants.paddleHalfWidth * 0.8, 0, this.constants.paddleHalfWidth * 0.8, 0))
+    });
+
+    this.objects.paddle1.ballCollisionEffect = this.objects.particles.createEmitter({
+      on: false,
+      lifespan: {min: 200, max: 300},
+      speed: {min: 200, max: 300},
+      scale: 0.2,
+      angle: {min: -160, max: -20},
+      alpha: {start: 0.5, end: 0}
+    });
+
+    this.objects.paddle2.ballCollisionEffect = this.objects.particles.createEmitter({
+      on: false,
+      lifespan: {min: 200, max: 300},
+      speed: {min: 200, max: 300},
+      scale: 0.2,
+      angle: {min: 20, max: 160},
+      alpha: {start: 0.5, end: 0}
+    });
+
+    this.objects.worldLeftCollisionEffect = this.objects.particles.createEmitter({
+      on: false,
+      lifespan: {min: 200, max: 300},
+      speed: {min: 200, max: 300},
+      scale: 0.2,
+      angle: {min: -70, max: 70},
+      alpha: {start: 0.5, end: 0}
+    });
+
+    this.objects.worldRightCollisionEffect = this.objects.particles.createEmitter({
+      on: false,
+      lifespan: {min: 200, max: 300},
+      speed: {min: 200, max: 300},
+      scale: 0.2,
+      angle: {min: 110, max: 250},
+      alpha: {start: 0.5, end: 0}
+    });
+
+    this.objects.worldUpCollisionEffect = this.objects.particles.createEmitter({
+      on: false,
+      lifespan: 500,
+      speed: 500,
+      scale: 0.5,
+      alpha: {start: 0.5, end: 0}
+    });
+
+    this.objects.worldDownCollisionEffect = this.objects.particles.createEmitter({
+      on: false,
+      lifespan: 500,
+      speed: 500,
+      scale: 0.5,
+      alpha: {start: 0.5, end: 0}
     });
 
     this.objects.countdownBackground = this.add.rectangle(0, 0, gameState.width, gameState.height, 0x000000, 0.7).setOrigin(0, 0);
@@ -220,9 +274,9 @@ class GameScene extends Phaser.Scene {
     this.objects.paddle1.setPosition(this.constants.centerX, gameState.height);
     this.objects.paddle2.setPosition(this.constants.centerX, 0);
 
-    this.objects.ball.emitters.stop();
-    this.objects.paddle1.emitters.stop();
-    this.objects.paddle2.emitters.stop();
+    this.objects.ball.trail.stop();
+    this.objects.paddle1.trail.stop();
+    this.objects.paddle2.trail.stop();
 
     this.objects.paddle1.setScale(1, 0);
     this.objects.paddle2.setScale(1, 0);
@@ -267,9 +321,9 @@ class GameScene extends Phaser.Scene {
       alpha: 1,
       duration: 1000,
       onComplete: () => {
-        this.objects.ball.emitters.start();
-        this.objects.paddle1.emitters.start();
-        this.objects.paddle2.emitters.start();
+        this.objects.ball.trail.start();
+        this.objects.paddle1.trail.start();
+        this.objects.paddle2.trail.start();
       }
     });
 
@@ -321,9 +375,9 @@ class GameScene extends Phaser.Scene {
     this.tweens.killAll();
     this.time.removeAllEvents();
 
-    this.objects.ball.emitters.stop();
-    this.objects.paddle1.emitters.stop();
-    this.objects.paddle2.emitters.stop();
+    this.objects.ball.trail.stop();
+    this.objects.paddle1.trail.stop();
+    this.objects.paddle2.trail.stop();
 
     this.tweens.add({
       targets: [this.objects.p1ScoreText, this.objects.p2ScoreText],
@@ -352,9 +406,9 @@ class GameScene extends Phaser.Scene {
     this.tweens.killAll();
     this.time.removeAllEvents();
 
-    this.objects.ball.emitters.stop();
-    this.objects.paddle1.emitters.stop();
-    this.objects.paddle2.emitters.stop();
+    this.objects.ball.trail.stop();
+    this.objects.paddle1.trail.stop();
+    this.objects.paddle2.trail.stop();
 
     this.objects.p1ScoreText.setDepth(1);
     this.objects.p2ScoreText.setDepth(1);
@@ -421,7 +475,7 @@ class GameScene extends Phaser.Scene {
           y: this.constants.centerY,
           lifespan: {min: 1000, max: 2000},
           speed: {min: 200, max: 400},
-          quantity: 5,
+          quantity: 3,
           scale: 0.5,
           alpha: {start: 1, end: 0}
         });
@@ -438,16 +492,23 @@ class GameScene extends Phaser.Scene {
   }
 
   ballWorldCollide(ball, up, down, left, right) {
-    if (up || down) {
-      var lastPoint;
-      if (up) {
-        this.objects.p1ScoreText.setText(++this.variables.p1Score);
-        lastPoint = this.variables.p1Score == this.constants.pointsToWin;
-      } else {
-        this.objects.p2ScoreText.setText(++this.variables.p2Score);
-        lastPoint = this.variables.p2Score == this.constants.pointsToWin;
-      }
+    var lastPoint = false;
 
+    if (up) {
+      this.objects.worldUpCollisionEffect.explode(1000, ball.x, ball.y);
+      this.objects.p1ScoreText.setText(++this.variables.p1Score);
+      lastPoint = this.variables.p1Score == this.constants.pointsToWin;
+    } else if (down) {
+      this.objects.worldDownCollisionEffect.explode(1000, ball.x, ball.y);
+      this.objects.p2ScoreText.setText(++this.variables.p2Score);
+      lastPoint = this.variables.p2Score == this.constants.pointsToWin;
+    } else if (left) {
+      this.objects.worldLeftCollisionEffect.explode(10, 0, ball.y);
+    } else if (right) {
+      this.objects.worldRightCollisionEffect.explode(10, gameState.width, ball.y);
+    }
+
+    if (up || down) {
       if (lastPoint) {
         this.endMatch(up);
       } else {
@@ -458,9 +519,15 @@ class GameScene extends Phaser.Scene {
   }
 
   ballPaddleCollide(ball, paddle) {
-    if (ball.body.touching.left || ball.body.touching.right) {
+    if (ball.body.touching.left) {
+      this.objects.worldLeftCollisionEffect.explode(10, paddle.x + this.constants.paddleHalfWidth, ball.y);
+      return;
+    } else if (ball.body.touching.right) {
+      this.objects.worldRightCollisionEffect.explode(10, paddle.x - this.constants.paddleHalfWidth, ball.y);
       return;
     }
+
+    paddle.ballCollisionEffect.explode(10, ball.x, paddle.y);
 
     var [angle, velocity] = this.getAngleVelocity(ball.body.velocity.x, ball.body.velocity.y);
 
