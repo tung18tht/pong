@@ -28,9 +28,9 @@ class Ball extends Phaser.Physics.Arcade.Sprite {
 }
 
 class Balls {
-  constructor(scene, mainBall) {
-    this.mainBall = mainBall;
-    this.phaserGroup = scene.physics.add.group([mainBall]);
+  constructor(scene, mainBallX, mainBallY) {
+    this.mainBall = new Ball(scene, mainBallX, mainBallY);
+    this.phaserGroup = scene.physics.add.group([this.mainBall]);
     this.children = this.phaserGroup.getChildren();
   }
 

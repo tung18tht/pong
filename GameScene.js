@@ -135,7 +135,7 @@ class GameScene extends Phaser.Scene {
       alpha: {start: 0.5, end: 0}
     });
 
-    this.objects.balls = new Balls(this, new Ball(this, this.constants.centerX, this.constants.centerY));
+    this.objects.balls = new Balls(this, this.constants.centerX, this.constants.centerY);
 
     this.physics.add.collider(this.objects.paddle1, this.objects.balls.phaserGroup, (paddle, ball) => {this.ballPaddleCollide(ball, paddle)});
     this.physics.add.collider(this.objects.paddle2, this.objects.balls.phaserGroup, (paddle, ball) => {this.ballPaddleCollide(ball, paddle)});
