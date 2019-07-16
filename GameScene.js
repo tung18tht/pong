@@ -135,7 +135,13 @@ class GameScene extends Phaser.Scene {
       alpha: {start: 0.5, end: 0}
     });
 
-    this.objects.ball = new Ball(this, this.constants.centerX, this.constants.centerY);
+    this.objects.balls = new Balls(this, new Ball(this, this.constants.centerX, this.constants.centerY));
+
+    this.physics.add.collider(this.objects.paddle1, this.objects.balls.phaserGroup, (paddle, ball) => {this.ballPaddleCollide(ball, paddle)});
+    this.physics.add.collider(this.objects.paddle2, this.objects.balls.phaserGroup, (paddle, ball) => {this.ballPaddleCollide(ball, paddle)});
+
+    this.physics.add.overlap(this.objects.paddle1, this.objects.balls.phaserGroup, (paddle, ball) => {this.ballPaddleOverlap(ball, paddle)});
+    this.physics.add.overlap(this.objects.paddle2, this.objects.balls.phaserGroup, (paddle, ball) => {this.ballPaddleOverlap(ball, paddle)});
 
     this.physics.world.on('worldbounds', (ball, up, down, left, right) => {this.ballWorldCollide(ball, up, down, left, right)});
 
@@ -196,7 +202,7 @@ class GameScene extends Phaser.Scene {
       duration: 500,
       onComplete: () => {
         this.objects.pauseBackgound.setAlpha(0);
-        this.startNewRound(this.objects.ball.body.velocity.y > 0);
+        this.startNewRound(this.objects.balls.mainBall.body.velocity.y > 0);
       }
     });
   }
@@ -221,7 +227,7 @@ class GameScene extends Phaser.Scene {
     }
 
     this.controlPaddle(this.objects.paddle1, this.input.x, delta);
-    this.controlPaddle(this.objects.paddle2, this.objects.ball.x, delta);
+    this.controlPaddle(this.objects.paddle2, this.objects.balls.getMinYBall().x, delta);
   }
 
   controlPaddle(paddle, targetX, delta) {
@@ -245,15 +251,15 @@ class GameScene extends Phaser.Scene {
   startNewRound(toSideP1) {
     this.physics.pause();
 
-    this.objects.ball.setAlpha(0);
+    this.objects.balls.mainBall.setAlpha(0);
     this.objects.paddle1.setAlpha(0);
     this.objects.paddle2.setAlpha(0);
 
-    this.objects.ball.setPosition(this.constants.centerX, this.constants.centerY);
+    this.objects.balls.mainBall.setPosition(this.constants.centerX, this.constants.centerY);
     this.objects.paddle1.setPosition(this.constants.centerX, gameState.height);
     this.objects.paddle2.setPosition(this.constants.centerX, 0);
 
-    this.objects.ball.trail.stop();
+    this.objects.balls.mainBall.trail.stop();
     this.objects.paddle1.trail.stop();
     this.objects.paddle2.trail.stop();
 
@@ -296,11 +302,11 @@ class GameScene extends Phaser.Scene {
     });
 
     this.tweens.add({
-      targets: [this.objects.ball, this.objects.paddle1, this.objects.paddle2],
+      targets: [this.objects.balls.mainBall, this.objects.paddle1, this.objects.paddle2],
       alpha: 1,
       duration: 1000,
       onComplete: () => {
-        this.objects.ball.trail.start();
+        this.objects.balls.mainBall.trail.start();
         this.objects.paddle1.trail.start();
         this.objects.paddle2.trail.start();
       }
@@ -329,7 +335,7 @@ class GameScene extends Phaser.Scene {
     });
 
     this.tweens.add({
-      targets: this.objects.ball,
+      targets: this.objects.balls.mainBall,
       y: this.constants.centerY + (toSideP1 ? this.constants.ballRadius : -this.constants.ballRadius) * 5,
       duration: 1500,
       delay: 1000,
@@ -346,7 +352,7 @@ class GameScene extends Phaser.Scene {
 
     var ballInitialAngle = Math.random() * 30 + 30 + (Math.random() < 0.5 ? 0 : 90);
     var [velocityX, velocityY] = this.getVelocityXY(ballInitialAngle, this.constants.ballInitialVelocity, toSideP1);
-    this.objects.ball.setVelocity(velocityX, velocityY);
+    this.objects.balls.mainBall.setVelocity(velocityX, velocityY);
   }
 
   endRound() {
@@ -354,7 +360,7 @@ class GameScene extends Phaser.Scene {
     this.tweens.killAll();
     this.time.removeAllEvents();
 
-    this.objects.ball.trail.stop();
+    this.objects.balls.stopTrails();
     this.objects.paddle1.trail.stop();
     this.objects.paddle2.trail.stop();
 
@@ -372,11 +378,14 @@ class GameScene extends Phaser.Scene {
     });
 
     this.tweens.add({
-      targets: [this.objects.ball, this.objects.paddle1, this.objects.paddle2],
+      targets: this.objects.balls.children.concat(this.objects.paddle1, this.objects.paddle2),
       alpha: 0,
       duration: 500,
       delay: 500,
-      onComplete: () => {this.events.emit("roundEnded")}
+      onComplete: () => {
+        this.objects.balls.deleteExtraBalls();
+        this.events.emit("roundEnded");
+      }
     });
   }
 
@@ -385,7 +394,7 @@ class GameScene extends Phaser.Scene {
     this.tweens.killAll();
     this.time.removeAllEvents();
 
-    this.objects.ball.trail.stop();
+    this.objects.balls.stopTrails();
     this.objects.paddle1.trail.stop();
     this.objects.paddle2.trail.stop();
 
@@ -399,10 +408,11 @@ class GameScene extends Phaser.Scene {
     });
 
     this.tweens.add({
-      targets: [this.objects.ball, p1Win ? this.objects.paddle2 : this.objects.paddle1],
+      targets: this.objects.balls.children.concat(p1Win ? this.objects.paddle2 : this.objects.paddle1),
       alpha: 0,
       duration: 500,
-      delay: 500
+      delay: 500,
+      onComplete: () => {this.objects.balls.clear()}
     });
 
     this.tweens.add({
@@ -419,8 +429,8 @@ class GameScene extends Phaser.Scene {
     this.objects.endMatchButton = this.add.rectangle(gameState.width - 50, this.constants.centerY, 50, 50).setOrigin(0.5, 0.5).setStrokeStyle(2, 0xFFFFFF).setInteractive().disableInteractive().setAlpha(0);
     this.objects.endMatchIcon = this.add.image(gameState.width - 50, this.constants.centerY, 'quit').setOrigin(0.5, 0.5).setDisplaySize(40, 40).setAlpha(0);
 
-    this.objects.endMatchButton.on('pointerover', () => { this.objects.endMatchButton.setScale(1.1) });
-    this.objects.endMatchButton.on('pointerout', () => { this.objects.endMatchButton.setScale(1) });
+    this.objects.endMatchButton.on('pointerover', () => {this.objects.endMatchButton.setScale(1.1)});
+    this.objects.endMatchButton.on('pointerout', () => {this.objects.endMatchButton.setScale(1)});
     this.objects.endMatchButton.once('pointerup', () => {
       this.tweens.add({
         targets: this.add.rectangle(0, 0, gameState.width, gameState.height, 0x000000, 0).setOrigin(0, 0).setDepth(2),

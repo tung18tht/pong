@@ -16,11 +16,52 @@ class Ball extends Phaser.Physics.Arcade.Sprite {
       scale: {start: 1, end: 0},
       alpha: {start: 0.2, end: 0}
     });
+  }
 
-    scene.physics.add.collider(this, scene.objects.paddle1, (ball, paddle) => {scene.ballPaddleCollide(ball, paddle)});
-    scene.physics.add.collider(this, scene.objects.paddle2, (ball, paddle) => {scene.ballPaddleCollide(ball, paddle)});
+  destroy() {
+    if (typeof this.scene !== "undefined") {
+      this.scene.objects.particles.emitters.remove(this.trail);
+    }
 
-    scene.physics.add.overlap(this, scene.objects.paddle1, (ball, paddle) => {scene.ballPaddleOverlap(ball, paddle)});
-    scene.physics.add.overlap(this, scene.objects.paddle2, (ball, paddle) => {scene.ballPaddleOverlap(ball, paddle)});
+    super.destroy();
+  }
+}
+
+class Balls {
+  constructor(scene, mainBall) {
+    this.mainBall = mainBall;
+    this.phaserGroup = scene.physics.add.group([mainBall]);
+    this.children = this.phaserGroup.getChildren();
+  }
+
+  stopTrails() {
+    this.children.forEach(ball => {
+      ball.trail.stop();
+    });
+  }
+
+  deleteExtraBalls() {
+    for (var i = this.children.length - 1; i > 0; i--) {
+      this.phaserGroup.remove(this.children[i], true, true);
+    }
+
+    this.mainBall = this.children[0];
+  }
+
+  clear() {
+    this.phaserGroup.clear(true, true);
+  }
+
+  getMinYBall() {
+    var targetBall, minY = Number.MAX_SAFE_INTEGER;
+
+    this.children.forEach(ball => {
+      if (ball.y < minY) {
+        minY = ball.y;
+        targetBall = ball;
+      }
+    });
+
+    return targetBall;
   }
 }
