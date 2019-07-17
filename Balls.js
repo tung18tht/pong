@@ -51,17 +51,4 @@ class Balls {
   clear() {
     this.phaserGroup.clear(true, true);
   }
-
-  getMinYBall() {
-    var targetBall, minY = Number.MAX_SAFE_INTEGER;
-
-    this.children.forEach(ball => {
-      if (ball.y < minY) {
-        minY = ball.y;
-        targetBall = ball;
-      }
-    });
-
-    return targetBall;
-  }
 }
