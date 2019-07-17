@@ -184,7 +184,7 @@ class GameScene extends Phaser.Scene {
     }
 
     this.objects.paddles.p1.move(this.input.x, delta);
-    this.objects.paddles.p2.move(this.objects.balls.mainBall.x, delta);
+    this.objects.paddles.p2.move(this.objects.balls.getMostDeadlyP2Ball().x, delta);
   }
 
   startNewRound(toSideP1) {

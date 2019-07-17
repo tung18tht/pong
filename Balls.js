@@ -51,4 +51,24 @@ class Balls {
   clear() {
     this.phaserGroup.clear(true, true);
   }
+
+  getMostDeadlyP2Ball() {
+    var posYVelocityBall, maxY = Number.MIN_SAFE_INTEGER, negYVelocityBall, minY = Number.MAX_SAFE_INTEGER;
+
+    this.children.forEach(ball => {
+      if (ball.body.velocity.y > 0) {
+        if (ball.y > maxY) {
+          maxY = ball.y;
+          posYVelocityBall = ball;
+        }
+      } else {
+        if (ball.y < minY) {
+          minY = ball.y;
+          negYVelocityBall = ball;
+        }
+      }
+    });
+
+    return negYVelocityBall ? negYVelocityBall : posYVelocityBall;
+  }
 }
