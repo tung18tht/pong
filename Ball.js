@@ -18,18 +18,18 @@ class Ball extends Phaser.Physics.Arcade.Sprite {
     });
   }
 
-  destroy() {
+  destroy(fromScene) {
     if (typeof this.scene !== "undefined") {
       this.scene.objects.particles.emitters.remove(this.trail);
     }
 
-    super.destroy();
+    super.destroy(fromScene);
   }
 }
 
 class Balls {
-  constructor(scene, mainBallX, mainBallY) {
-    this.mainBall = new Ball(scene, mainBallX, mainBallY);
+  constructor(scene) {
+    this.mainBall = new Ball(scene, scene.constants.centerX, scene.constants.centerY);
     this.phaserGroup = scene.physics.add.group([this.mainBall]);
     this.children = this.phaserGroup.getChildren();
   }
