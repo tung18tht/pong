@@ -58,42 +58,7 @@ class GameScene extends Phaser.Scene {
     this.objects.p1ScoreText = this.add.text(this.constants.centerX, this.constants.centerY + 50, this.variables.p1Score, {fontSize: 80, color: '#AAAAAA'}).setOrigin(0.5, 0.5);
     this.objects.p2ScoreText = this.add.text(this.constants.centerX, this.constants.centerY - 50, this.variables.p2Score, {fontSize: 80, color: '#AAAAAA'}).setOrigin(0.5, 0.5).setFlip(true, true);
 
-    this.objects.particles = this.add.particles('ball');
-
-    this.objects.worldLeftCollisionEffect = this.objects.particles.createEmitter({
-      on: false,
-      lifespan: {min: 200, max: 300},
-      speed: {min: 200, max: 300},
-      scale: 0.2,
-      angle: {min: -70, max: 70},
-      alpha: {start: 0.5, end: 0}
-    });
-
-    this.objects.worldRightCollisionEffect = this.objects.particles.createEmitter({
-      on: false,
-      lifespan: {min: 200, max: 300},
-      speed: {min: 200, max: 300},
-      scale: 0.2,
-      angle: {min: 110, max: 250},
-      alpha: {start: 0.5, end: 0}
-    });
-
-    this.objects.worldUpCollisionEffect = this.objects.particles.createEmitter({
-      on: false,
-      lifespan: {min: 450, max: 550},
-      speed: {min: 450, max: 550},
-      scale: 0.5,
-      alpha: {start: 0.5, end: 0}
-    });
-
-    this.objects.worldDownCollisionEffect = this.objects.particles.createEmitter({
-      on: false,
-      lifespan: {min: 450, max: 550},
-      speed: {min: 450, max: 550},
-      scale: 0.5,
-      alpha: {start: 0.5, end: 0}
-    });
-
+    this.objects.effects = new Effects(this);
     this.objects.balls = new Balls(this);
     this.objects.paddles = new Paddles(this);
 
@@ -390,17 +355,7 @@ class GameScene extends Phaser.Scene {
       scaleY: 2,
       duration: 1000,
       delay: 1000,
-      onComplete: () => {
-        this.objects.particles.createEmitter({
-          x: this.constants.centerX,
-          y: this.constants.centerY,
-          lifespan: {min: 1000, max: 2000},
-          speed: {min: 200, max: 400},
-          quantity: 3,
-          scale: 0.5,
-          alpha: {start: 1, end: 0}
-        });
-      }
+      onComplete: () => {this.objects.effects.endMatch.start()}
     });
 
     this.tweens.add({
@@ -416,20 +371,20 @@ class GameScene extends Phaser.Scene {
     var lastPoint = false;
 
     if (up) {
-      this.objects.worldUpCollisionEffect.explode(1000, ball.x, ball.y);
       this.objects.p1ScoreText.setText(++this.variables.p1Score);
       lastPoint = this.variables.p1Score == this.constants.pointsToWin;
     } else if (down) {
-      this.objects.worldDownCollisionEffect.explode(1000, ball.x, ball.y);
       this.objects.p2ScoreText.setText(++this.variables.p2Score);
       lastPoint = this.variables.p2Score == this.constants.pointsToWin;
     } else if (left) {
-      this.objects.worldLeftCollisionEffect.explode(10, 0, ball.y);
+      this.objects.effects.ballLeftCollision.explode(10, 0, ball.y);
     } else if (right) {
-      this.objects.worldRightCollisionEffect.explode(10, gameState.width, ball.y);
+      this.objects.effects.ballRightCollision.explode(10, gameState.width, ball.y);
     }
 
     if (up || down) {
+      this.objects.effects.ballScored.explode(1000, ball.x, ball.y);
+
       if (lastPoint) {
         this.endMatch(up);
       } else {
@@ -441,10 +396,10 @@ class GameScene extends Phaser.Scene {
 
   ballPaddleCollide(ball, paddle) {
     if (ball.body.touching.left) {
-      this.objects.worldLeftCollisionEffect.explode(10, paddle.x + this.constants.paddleHalfWidth, ball.y);
+      this.objects.effects.ballLeftCollision.explode(10, paddle.x + this.constants.paddleHalfWidth, ball.y);
       return;
     } else if (ball.body.touching.right) {
-      this.objects.worldRightCollisionEffect.explode(10, paddle.x - this.constants.paddleHalfWidth, ball.y);
+      this.objects.effects.ballRightCollision.explode(10, paddle.x - this.constants.paddleHalfWidth, ball.y);
       return;
     }
 
@@ -491,13 +446,13 @@ class GameScene extends Phaser.Scene {
   ballPaddleOverlap(ball, paddle) {
     if (ball.x > paddle.x) {
       if (ball.body.velocity.x < 0) {
-        this.objects.worldLeftCollisionEffect.explode(10, paddle.x + this.constants.paddleHalfWidth, ball.y);
+        this.objects.effects.ballLeftCollision.explode(10, paddle.x + this.constants.paddleHalfWidth, ball.y);
         ball.setVelocityX(-ball.body.velocity.x);
       }
       ball.x = paddle.x + this.constants.paddleHalfWidth + this.constants.ballRadius;
     } else {
       if (ball.body.velocity.x > 0) {
-        this.objects.worldRightCollisionEffect.explode(10, paddle.x - this.constants.paddleHalfWidth, ball.y);
+        this.objects.effects.ballRightCollision.explode(10, paddle.x - this.constants.paddleHalfWidth, ball.y);
         ball.setVelocityX(-ball.body.velocity.x);
       }
       ball.x = paddle.x - this.constants.paddleHalfWidth - this.constants.ballRadius;

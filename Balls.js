@@ -10,7 +10,7 @@ class Ball extends Phaser.Physics.Arcade.Sprite {
     this.setOrigin(0.5, 0.5).setCollideWorldBounds(true).setBounce(1, 1);
     this.body.onWorldBounds = true;
 
-    this.trail = scene.objects.particles.createEmitter({
+    this.trail = scene.objects.effects.createEmitter({
       follow: this,
       lifespan: 200,
       scale: {start: 1, end: 0},
@@ -20,7 +20,7 @@ class Ball extends Phaser.Physics.Arcade.Sprite {
 
   destroy(fromScene) {
     if (typeof this.scene !== "undefined") {
-      this.scene.objects.particles.emitters.remove(this.trail);
+      this.scene.objects.effects.removeEmitter(this.trail);
     }
 
     super.destroy(fromScene);

@@ -9,7 +9,7 @@ class Paddle extends Phaser.Physics.Arcade.Sprite {
 
     this.setOrigin(0.5, 0.5).setCollideWorldBounds(true).setImmovable(true);
 
-    this.trail = scene.objects.particles.createEmitter({
+    this.trail = scene.objects.effects.createEmitter({
       follow: this,
       lifespan: {min: 400, max: 600},
       speed: {min: 40, max: 60},
@@ -19,8 +19,8 @@ class Paddle extends Phaser.Physics.Arcade.Sprite {
       emitZone: new Phaser.GameObjects.Particles.Zones.RandomZone(new Phaser.Geom.Line(-scene.constants.paddleHalfWidth * 0.8, 0, scene.constants.paddleHalfWidth * 0.8, 0))
     });
 
-    this.ballCollisionEffect = scene.objects.particles.createEmitter({
-      on: false,
+    this.ballCollisionEffect = scene.objects.effects.createEmitter({
+      frequency: -1,
       lifespan: {min: 200, max: 300},
       speed: {min: 200, max: 300},
       scale: 0.2,
