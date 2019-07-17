@@ -377,13 +377,13 @@ class GameScene extends Phaser.Scene {
       this.objects.p2ScoreText.setText(++this.variables.p2Score);
       lastPoint = this.variables.p2Score == this.constants.pointsToWin;
     } else if (left) {
-      this.objects.effects.ballLeftCollision.explode(10, 0, ball.y);
+      this.objects.effects.ballLeftCollision.explode(10, 0, ball.gameObject.y);
     } else if (right) {
-      this.objects.effects.ballRightCollision.explode(10, gameState.width, ball.y);
+      this.objects.effects.ballRightCollision.explode(10, gameState.width, ball.gameObject.y);
     }
 
     if (up || down) {
-      this.objects.effects.ballScored.explode(1000, ball.x, ball.y);
+      this.objects.effects.ballScored.explode(1000, ball.gameObject.x, ball.gameObject.y);
 
       if (lastPoint) {
         this.endMatch(up);
