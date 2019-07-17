@@ -6,6 +6,7 @@ class GameScene extends Phaser.Scene {
     this.constants.centerX = gameState.width / 2;
     this.constants.centerY = gameState.height / 2;
     this.constants.pointsToWin = 3;
+    this.constants.powerUpsInterval = 4000;
 
     this.constants.paddleWidth = 120;
     this.constants.paddleHeight = 15;
@@ -17,6 +18,7 @@ class GameScene extends Phaser.Scene {
     this.constants.paddleMaxBounceAngleAdjust = 20;
 
     this.constants.ballRadius = 15;
+    this.constants.ballDiameter = this.constants.ballRadius * 2;
     this.constants.ballBounce = 1.02;
     this.constants.ballInitialVelocity = 400;
     this.constants.ballMaxVelocity = 1000;
@@ -50,6 +52,10 @@ class GameScene extends Phaser.Scene {
     this.load.image('play', 'assets/play.png');
     this.load.image('quit', 'assets/quit.png');
     this.load.image('pause', 'assets/pause.png');
+
+    Object.values(PowerUps.types).forEach(powerUp => {
+      this.load.image(powerUp, 'assets/powerups/' + powerUp + '.png');
+    });
   }
 
   create() {
@@ -59,11 +65,13 @@ class GameScene extends Phaser.Scene {
     this.objects.p2ScoreText = this.add.text(this.constants.centerX, this.constants.centerY - 50, this.variables.p2Score, {fontSize: 80, color: '#AAAAAA'}).setOrigin(0.5, 0.5).setFlip(true, true);
 
     this.objects.effects = new Effects(this);
-    this.objects.balls = new Balls(this);
     this.objects.paddles = new Paddles(this);
+    this.objects.balls = new Balls(this);
+    this.objects.powerUps = new PowerUps(this);
 
     this.physics.add.collider(this.objects.balls.phaserGroup, this.objects.paddles.phaserGroup, (ball, paddle) => {this.ballPaddleCollide(ball, paddle)});
     this.physics.add.overlap(this.objects.balls.phaserGroup, this.objects.paddles.phaserGroup, (ball, paddle) => {this.ballPaddleOverlap(ball, paddle)});
+    this.physics.add.overlap(this.objects.balls.phaserGroup, this.objects.powerUps.phaserGroup, (ball, powerUp) => {this.ballPowerUpOverlap(ball, powerUp)});
 
     this.physics.world.on('worldbounds', (ball, up, down, left, right) => {this.ballWorldCollide(ball, up, down, left, right)});
 
@@ -148,8 +156,11 @@ class GameScene extends Phaser.Scene {
       return;
     }
 
-    this.objects.paddles.p1.move(this.input.x, delta);
-    this.objects.paddles.p2.move(this.objects.balls.getMostDeadlyP2Ball().x, delta);
+    var [posYVelocityBall, negYVelocityBall] = this.objects.balls.getMostDeadlyBalls();
+
+    // this.objects.paddles.p1.move(this.input.x, delta);
+    this.objects.paddles.p1.move(posYVelocityBall.x, delta);
+    this.objects.paddles.p2.move(negYVelocityBall.x, delta);
   }
 
   startNewRound(toSideP1) {
@@ -191,7 +202,10 @@ class GameScene extends Phaser.Scene {
       duration: 500,
       delay: 2500,
       onStart: () => {this.objects.pauseButton.disableInteractive()},
-      onComplete: () => {this.physics.resume()}
+      onComplete: () => {
+        this.physics.resume();
+        this.objects.powerUps.startSpawning();
+      }
     });
 
     this.time.addEvent({
@@ -261,6 +275,7 @@ class GameScene extends Phaser.Scene {
 
     this.objects.balls.stopTrails();
     this.objects.paddles.stopTrails();
+    this.objects.powerUps.stopEffects();
 
     this.tweens.add({
       targets: [this.objects.p1ScoreText, this.objects.p2ScoreText],
@@ -276,12 +291,13 @@ class GameScene extends Phaser.Scene {
     });
 
     this.tweens.add({
-      targets: this.objects.balls.children.concat(this.objects.paddles.p1, this.objects.paddles.p2),
+      targets: this.objects.balls.children.concat(this.objects.powerUps.children).concat(this.objects.paddles.p1, this.objects.paddles.p2),
       alpha: 0,
       duration: 500,
       delay: 500,
       onComplete: () => {
         this.objects.balls.deleteExtraBalls();
+        this.objects.powerUps.clear();
         this.events.emit("roundEnded");
       }
     });
@@ -294,6 +310,7 @@ class GameScene extends Phaser.Scene {
 
     this.objects.balls.stopTrails();
     this.objects.paddles.stopTrails();
+    this.objects.powerUps.stopEffects();
 
     this.objects.p1ScoreText.setDepth(1);
     this.objects.p2ScoreText.setDepth(1);
@@ -305,11 +322,14 @@ class GameScene extends Phaser.Scene {
     });
 
     this.tweens.add({
-      targets: this.objects.balls.children.concat(p1Win ? this.objects.paddles.p2 : this.objects.paddles.p1),
+      targets: this.objects.balls.children.concat(this.objects.powerUps.children).concat(p1Win ? this.objects.paddles.p2 : this.objects.paddles.p1),
       alpha: 0,
       duration: 500,
       delay: 500,
-      onComplete: () => {this.objects.balls.clear()}
+      onComplete: () => {
+        this.objects.balls.clear();
+        this.objects.powerUps.clear();
+      }
     });
 
     this.tweens.add({
@@ -395,6 +415,8 @@ class GameScene extends Phaser.Scene {
   }
 
   ballPaddleCollide(ball, paddle) {
+    ball.fromPaddle = paddle;
+
     if (ball.body.touching.left) {
       this.objects.effects.ballLeftCollision.explode(10, paddle.x + this.constants.paddleHalfWidth, ball.y);
       return;
@@ -457,6 +479,21 @@ class GameScene extends Phaser.Scene {
       }
       ball.x = paddle.x - this.constants.paddleHalfWidth - this.constants.ballRadius;
     }
+  }
+
+  ballPowerUpOverlap(ball, powerUp) {
+    this.objects.effects.powerUpHit.explode(1000, powerUp.x, powerUp.y);
+
+    switch (powerUp.type) {
+      case PowerUps.types.X2:
+        this.objects.balls.double(ball);
+        break;
+      case PowerUps.types.EXPAND:
+
+        break;
+    }
+
+    this.objects.powerUps.remove(powerUp);
   }
 
   getAngleVelocity(velocityX, velocityY) {

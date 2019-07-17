@@ -2,7 +2,7 @@ class Effects {
   constructor(scene) {
     this.particles = scene.add.particles('ball');
 
-    this.ballLeftCollision = this.particles.createEmitter({
+    this.ballLeftCollision = this.createEmitter({
       frequency: -1,
       lifespan: {min: 200, max: 300},
       speed: {min: 200, max: 300},
@@ -11,7 +11,7 @@ class Effects {
       alpha: {start: 0.5, end: 0}
     });
 
-    this.ballRightCollision = this.particles.createEmitter({
+    this.ballRightCollision = this.createEmitter({
       frequency: -1,
       lifespan: {min: 200, max: 300},
       speed: {min: 200, max: 300},
@@ -20,7 +20,15 @@ class Effects {
       alpha: {start: 0.5, end: 0}
     });
 
-    this.ballScored = this.particles.createEmitter({
+    this.powerUpHit = this.createEmitter({
+      frequency: -1,
+      lifespan: {min: 200, max: 300},
+      speed: {min: 200, max: 300},
+      scale: 0.2,
+      alpha: {start: 0.2, end: 0}
+    });
+
+    this.ballScored = this.createEmitter({
       frequency: -1,
       lifespan: {min: 450, max: 550},
       speed: {min: 450, max: 550},
@@ -28,7 +36,7 @@ class Effects {
       alpha: {start: 0.5, end: 0}
     });
 
-    this.endMatch = this.particles.createEmitter({
+    this.endMatch = this.createEmitter({
       on: false,
       x: scene.constants.centerX,
       y: scene.constants.centerY,

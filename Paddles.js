@@ -16,7 +16,7 @@ class Paddle extends Phaser.Physics.Arcade.Sprite {
       scale: 0.3,
       angle: p1 ? {min: 30, max: 150} : {min: 210, max: 330},
       alpha: {start: 0.5, end: 0},
-      emitZone: new Phaser.GameObjects.Particles.Zones.RandomZone(new Phaser.Geom.Line(-scene.constants.paddleHalfWidth * 0.8, 0, scene.constants.paddleHalfWidth * 0.8, 0))
+      emitZone: {source: new Phaser.Geom.Line(-scene.constants.paddleHalfWidth * 0.8, 0, scene.constants.paddleHalfWidth * 0.8, 0)}
     });
 
     this.ballCollisionEffect = scene.objects.effects.createEmitter({
