@@ -84,6 +84,7 @@ class Balls {
 
   double(ball) {
     var newBall = new Ball(this.scene, ball.x, ball.y);
+    newBall.fromPaddle = ball.fromPaddle;
     this.phaserGroup.add(newBall);
 
     var [originalAngle, originalVelocity] = this.scene.getAngleVelocity(ball.body.velocity.x, ball.body.velocity.y);

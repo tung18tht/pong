@@ -489,7 +489,25 @@ class GameScene extends Phaser.Scene {
         this.objects.balls.double(ball);
         break;
       case PowerUps.types.EXPAND:
+        var targetPaddle = ball.fromPaddle;
 
+        targetPaddle.trueScaleX += 0.5;
+        this.tweens.add({
+          targets: targetPaddle,
+          scaleX: targetPaddle.trueScaleX,
+          duration: 1000
+        });
+
+        this.time.addEvent({
+          delay: 5000, callback: () => {
+            targetPaddle.trueScaleX -= 0.5;
+            this.tweens.add({
+              targets: targetPaddle,
+              scaleX: targetPaddle.trueScaleX,
+              duration: 1000
+            });
+          }
+        });
         break;
     }
 

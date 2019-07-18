@@ -9,6 +9,8 @@ class Paddle extends Phaser.Physics.Arcade.Sprite {
 
     this.setOrigin(0.5, 0.5).setCollideWorldBounds(true).setImmovable(true);
 
+    this.trueScaleX = 1;
+
     this.trail = scene.objects.effects.createEmitter({
       follow: this,
       lifespan: {min: 400, max: 600},
