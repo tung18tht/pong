@@ -52,8 +52,8 @@ class PowerUps {
       delay: this.scene.constants.powerUpsInterval, loop: true, callback: () => {
         this.phaserGroup.add(new PowerUp(
           this.scene,
-          Math.random() * gameState.width,
-          Math.random() * gameState.height,
+          50 + Math.random() * (gameState.width - 100),
+          100 + Math.random() * (gameState.height - 200),
           this.powerUpsValues[Math.floor(Math.random() * this.powerUpsValues.length)]
         ));
       }
