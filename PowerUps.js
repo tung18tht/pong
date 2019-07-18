@@ -10,7 +10,7 @@ class PowerUp extends Phaser.GameObjects.Image {
 
     this.setOrigin(0.5, 0.5).setDisplaySize(scene.constants.ballDiameter, scene.constants.ballDiameter);
 
-    scene.tweens.add({
+    this.tween = scene.tweens.add({
       targets: this,
       angle: 360,
       repeat: -1,
@@ -32,6 +32,7 @@ class PowerUp extends Phaser.GameObjects.Image {
   destroy(fromScene) {
     if (this.scene) {
       this.scene.objects.effects.removeEmitter(this.effect);
+      this.tween.remove();
     }
 
     super.destroy(fromScene);
