@@ -23,6 +23,7 @@ class Paddle extends Phaser.Physics.Arcade.Sprite {
 
     this.ballCollisionEffect = scene.objects.effects.createEmitter({
       frequency: -1,
+      quantity: 10,
       lifespan: {min: 200, max: 300},
       speed: {min: 200, max: 300},
       scale: 0.2,

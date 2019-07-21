@@ -397,13 +397,13 @@ class GameScene extends Phaser.Scene {
       this.objects.p2ScoreText.setText(++this.variables.p2Score);
       lastPoint = this.variables.p2Score == this.constants.pointsToWin;
     } else if (left) {
-      this.objects.effects.ballLeftCollision.explode(10, 0, ball.gameObject.y);
+      this.objects.effects.ballLeftCollision.emitParticleAt(0, ball.gameObject.y);
     } else if (right) {
-      this.objects.effects.ballRightCollision.explode(10, gameState.width, ball.gameObject.y);
+      this.objects.effects.ballRightCollision.emitParticleAt(gameState.width, ball.gameObject.y);
     }
 
     if (up || down) {
-      this.objects.effects.ballScored.explode(1000, ball.gameObject.x, ball.gameObject.y);
+      this.objects.effects.ballScored.emitParticleAt(ball.gameObject.x, ball.gameObject.y);
 
       if (lastPoint) {
         this.endMatch(up);
@@ -418,14 +418,14 @@ class GameScene extends Phaser.Scene {
     ball.fromPaddle = paddle;
 
     if (ball.body.touching.left) {
-      this.objects.effects.ballLeftCollision.explode(10, paddle.x + this.constants.paddleHalfWidth, ball.y);
+      this.objects.effects.ballLeftCollision.emitParticleAt(paddle.x + this.constants.paddleHalfWidth, ball.y);
       return;
     } else if (ball.body.touching.right) {
-      this.objects.effects.ballRightCollision.explode(10, paddle.x - this.constants.paddleHalfWidth, ball.y);
+      this.objects.effects.ballRightCollision.emitParticleAt(paddle.x - this.constants.paddleHalfWidth, ball.y);
       return;
     }
 
-    paddle.ballCollisionEffect.explode(10, ball.x, paddle.y);
+    paddle.ballCollisionEffect.emitParticleAt(ball.x, paddle.y);
 
     var [angle, velocity] = this.getAngleVelocity(ball.body.velocity.x, ball.body.velocity.y);
 
@@ -468,13 +468,13 @@ class GameScene extends Phaser.Scene {
   ballPaddleOverlap(ball, paddle) {
     if (ball.x > paddle.x) {
       if (ball.body.velocity.x < 0) {
-        this.objects.effects.ballLeftCollision.explode(10, paddle.x + this.constants.paddleHalfWidth, ball.y);
+        this.objects.effects.ballLeftCollision.emitParticleAt(paddle.x + this.constants.paddleHalfWidth, ball.y);
         ball.setVelocityX(-ball.body.velocity.x);
       }
       ball.x = paddle.x + this.constants.paddleHalfWidth + this.constants.ballRadius;
     } else {
       if (ball.body.velocity.x > 0) {
-        this.objects.effects.ballRightCollision.explode(10, paddle.x - this.constants.paddleHalfWidth, ball.y);
+        this.objects.effects.ballRightCollision.emitParticleAt(paddle.x - this.constants.paddleHalfWidth, ball.y);
         ball.setVelocityX(-ball.body.velocity.x);
       }
       ball.x = paddle.x - this.constants.paddleHalfWidth - this.constants.ballRadius;
@@ -482,7 +482,7 @@ class GameScene extends Phaser.Scene {
   }
 
   ballPowerUpOverlap(ball, powerUp) {
-    this.objects.effects.powerUpHit.explode(1000, powerUp.x, powerUp.y);
+    this.objects.effects.powerUpHit.emitParticleAt(powerUp.x, powerUp.y);
 
     switch (powerUp.type) {
       case PowerUps.types.X2:

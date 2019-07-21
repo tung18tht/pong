@@ -4,6 +4,7 @@ class Effects {
 
     this.ballLeftCollision = this.createEmitter({
       frequency: -1,
+      quantity: 10,
       lifespan: {min: 200, max: 300},
       speed: {min: 200, max: 300},
       scale: 0.2,
@@ -13,6 +14,7 @@ class Effects {
 
     this.ballRightCollision = this.createEmitter({
       frequency: -1,
+      quantity: 10,
       lifespan: {min: 200, max: 300},
       speed: {min: 200, max: 300},
       scale: 0.2,
@@ -22,6 +24,7 @@ class Effects {
 
     this.powerUpHit = this.createEmitter({
       frequency: -1,
+      quantity: 1000,
       lifespan: {min: 200, max: 300},
       speed: {min: 200, max: 300},
       scale: 0.2,
@@ -30,6 +33,7 @@ class Effects {
 
     this.ballScored = this.createEmitter({
       frequency: -1,
+      quantity: 1000,
       lifespan: {min: 450, max: 550},
       speed: {min: 450, max: 550},
       scale: 0.5,
