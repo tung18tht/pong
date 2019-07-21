@@ -20,12 +20,20 @@ class PowerUp extends Phaser.GameObjects.Image {
     this.effect = scene.objects.effects.createEmitter({
       x: x,
       y: y,
+      quantity: 2,
       lifespan: {min: 250, max: 300},
-      speed: {min: 25, max: 50},
+      speed: {min: 25, max: 30},
       scale: 0.2,
-      alpha: {start: 0.5, end: 0},
-      emitZone: {source: new Phaser.Geom.Circle(0, 0, scene.constants.ballRadius), type: 'edge', quantity: 12},
-      deathZone: {source: new Phaser.Geom.Circle(x, y, scene.constants.ballRadius)}
+      alpha: {start: 0.3, end: 0},
+      emitCallback: (particle) => {
+        var newX = scene.constants.ballRadius * Math.cos(Math.atan2(particle.velocityY, particle.velocityX));
+        var newY = Math.sqrt((scene.constants.ballRadius ** 2) - (newX ** 2));
+        if (particle.velocityY < 0) {
+          newY = -newY;
+        }
+
+        particle.fire(newX, newY);
+      }
     });
   }
 
