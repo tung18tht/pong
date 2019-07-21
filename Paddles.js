@@ -1,6 +1,6 @@
 class Paddle extends Phaser.Physics.Arcade.Sprite {
   constructor(scene, p1) {
-    super(scene, scene.constants.centerX, p1 ? gameState.height - scene.constants.paddleYOffset : scene.constants.paddleYOffset, "paddle");
+    super(scene, gameConfig.centerX, p1 ? gameConfig.height - gameConfig.paddleYOffset : gameConfig.paddleYOffset, "paddle");
 
     this.scene = scene;
 
@@ -18,7 +18,7 @@ class Paddle extends Phaser.Physics.Arcade.Sprite {
       scale: 0.3,
       angle: p1 ? {min: 30, max: 150} : {min: 210, max: 330},
       alpha: {start: 0.5, end: 0},
-      emitZone: {source: new Phaser.Geom.Line(-scene.constants.paddleHalfWidth * 0.8, 0, scene.constants.paddleHalfWidth * 0.8, 0)}
+      emitZone: {source: new Phaser.Geom.Line(-gameConfig.paddleHalfWidth * 0.8, 0, gameConfig.paddleHalfWidth * 0.8, 0)}
     });
 
     this.ballCollisionEffect = scene.objects.effects.createEmitter({
@@ -34,7 +34,7 @@ class Paddle extends Phaser.Physics.Arcade.Sprite {
 
   move(targetX, delta) {
     var diff = this.x - targetX;
-    var step = this.scene.constants.paddleStepPerMs * delta;
+    var step = gameConfig.paddleStepPerMs * delta;
 
     if (diff < -step) {
       this.x += step;
@@ -44,10 +44,10 @@ class Paddle extends Phaser.Physics.Arcade.Sprite {
       this.x = targetX;
     }
 
-    if (this.x > this.scene.constants.paddleMaxX) {
-      this.x = this.scene.constants.paddleMaxX;
-    } else if (this.x < this.scene.constants.paddleMinX) {
-      this.x = this.scene.constants.paddleMinX;
+    if (this.x > gameConfig.paddleMaxX) {
+      this.x = gameConfig.paddleMaxX;
+    } else if (this.x < gameConfig.paddleMinX) {
+      this.x = gameConfig.paddleMinX;
     }
   }
 }
@@ -68,8 +68,8 @@ class Paddles {
   }
 
   setupNewRoundPosition() {
-    this.p1.setPosition(this.scene.constants.centerX, gameState.height);
-    this.p2.setPosition(this.scene.constants.centerX, 0);
+    this.p1.setPosition(gameConfig.centerX, gameConfig.height);
+    this.p2.setPosition(gameConfig.centerX, 0);
   }
 
   setupNewRoundScale() {

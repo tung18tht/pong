@@ -1,32 +1,6 @@
 class GameScene extends Phaser.Scene {
   constructor() {
     super('GameScene');
-
-    this.constants = {};
-    this.constants.centerX = gameState.width / 2;
-    this.constants.centerY = gameState.height / 2;
-    this.constants.pointsToWin = 3;
-    this.constants.powerUpsInterval = 4000;
-
-    this.constants.paddleWidth = 120;
-    this.constants.paddleHeight = 15;
-    this.constants.paddleHalfWidth = this.constants.paddleWidth / 2;
-    this.constants.paddleMinX = this.constants.paddleHalfWidth;
-    this.constants.paddleMaxX = gameState.width - this.constants.paddleHalfWidth;
-    this.constants.paddleYOffset = this.constants.paddleHeight * 3;
-    this.constants.paddleStepPerMs = 1000 / 1000;
-    this.constants.paddleMaxBounceAngleAdjust = 20;
-
-    this.constants.ballRadius = 15;
-    this.constants.ballDiameter = this.constants.ballRadius * 2;
-    this.constants.ballBounce = 1.02;
-    this.constants.ballInitialVelocity = 400;
-    this.constants.ballMaxVelocity = 1000;
-    this.constants.ballAngleLimit = 20;
-    this.constants.ballPosMaxAngle = 180 - this.constants.ballAngleLimit;
-    this.constants.ballPosMinAngle = this.constants.ballAngleLimit;
-    this.constants.ballNegMaxAngle = - this.constants.ballPosMinAngle;
-    this.constants.ballNegMinAngle = - this.constants.ballPosMaxAngle;
   }
 
   preload() {
@@ -39,14 +13,14 @@ class GameScene extends Phaser.Scene {
 
     var paddleGraphic = this.add.graphics(0, 0);
     paddleGraphic.fillStyle(0xFFFFFF);
-    paddleGraphic.fillRect(0, 0, this.constants.paddleWidth, this.constants.paddleHeight);
-    paddleGraphic.generateTexture('paddle', this.constants.paddleWidth, this.constants.paddleHeight)
+    paddleGraphic.fillRect(0, 0, gameConfig.paddleWidth, gameConfig.paddleHeight);
+    paddleGraphic.generateTexture('paddle', gameConfig.paddleWidth, gameConfig.paddleHeight)
     paddleGraphic.destroy();
 
     var ballGraphic = this.add.graphics(0, 0);
     ballGraphic.fillStyle(0xFFFFFF);
-    ballGraphic.fillCircle(this.constants.ballRadius, this.constants.ballRadius, this.constants.ballRadius);
-    ballGraphic.generateTexture('ball', this.constants.ballRadius * 2, this.constants.ballRadius * 2)
+    ballGraphic.fillCircle(gameConfig.ballRadius, gameConfig.ballRadius, gameConfig.ballRadius);
+    ballGraphic.generateTexture('ball', gameConfig.ballRadius * 2, gameConfig.ballRadius * 2)
     ballGraphic.destroy();
 
     this.load.image('play', 'assets/play.png');
@@ -59,10 +33,10 @@ class GameScene extends Phaser.Scene {
   }
 
   create() {
-    this.add.rectangle(0, this.constants.centerY - 1, gameState.width, 2, 0x888888).setOrigin(0, 0);
+    this.add.rectangle(0, gameConfig.centerY - 1, gameConfig.width, 2, 0x888888).setOrigin(0, 0);
 
-    this.objects.p1ScoreText = this.add.text(this.constants.centerX, this.constants.centerY + 50, this.variables.p1Score, {fontSize: 80, color: '#AAAAAA'}).setOrigin(0.5, 0.5);
-    this.objects.p2ScoreText = this.add.text(this.constants.centerX, this.constants.centerY - 50, this.variables.p2Score, {fontSize: 80, color: '#AAAAAA'}).setOrigin(0.5, 0.5).setFlip(true, true);
+    this.objects.p1ScoreText = this.add.text(gameConfig.centerX, gameConfig.centerY + 50, this.variables.p1Score, {fontSize: 80, color: '#AAAAAA'}).setOrigin(0.5, 0.5);
+    this.objects.p2ScoreText = this.add.text(gameConfig.centerX, gameConfig.centerY - 50, this.variables.p2Score, {fontSize: 80, color: '#AAAAAA'}).setOrigin(0.5, 0.5).setFlip(true, true);
 
     this.objects.effects = new Effects(this);
     this.objects.paddles = new Paddles(this);
@@ -75,12 +49,12 @@ class GameScene extends Phaser.Scene {
 
     this.physics.world.on('worldbounds', (ball, up, down, left, right) => {this.ballWorldCollide(ball, up, down, left, right)});
 
-    this.objects.countdownBackground = this.add.rectangle(0, 0, gameState.width, gameState.height, 0x000000, 0.7).setOrigin(0, 0);
-    this.objects.countdownP1 = this.add.text(this.constants.centerX, this.constants.centerY * 1.5, this.variables.countdownNumber, {fontSize: 120, color: '#FFFFFF'}).setOrigin(0.5, 0.5);
-    this.objects.countdownP2 = this.add.text(this.constants.centerX, this.constants.centerY * 0.5, this.variables.countdownNumber, {fontSize: 120, color: '#FFFFFF'}).setOrigin(0.5, 0.5).setFlip(true, true);
+    this.objects.countdownBackground = this.add.rectangle(0, 0, gameConfig.width, gameConfig.height, 0x000000, 0.7).setOrigin(0, 0);
+    this.objects.countdownP1 = this.add.text(gameConfig.centerX, gameConfig.centerY * 1.5, this.variables.countdownNumber, {fontSize: 120, color: '#FFFFFF'}).setOrigin(0.5, 0.5);
+    this.objects.countdownP2 = this.add.text(gameConfig.centerX, gameConfig.centerY * 0.5, this.variables.countdownNumber, {fontSize: 120, color: '#FFFFFF'}).setOrigin(0.5, 0.5).setFlip(true, true);
 
-    this.objects.pauseButton = this.add.rectangle(gameState.width - 50, this.constants.centerY, 50, 50).setOrigin(0.5, 0.5).setStrokeStyle(2, 0xFFFFFF);
-    this.objects.pauseIcon = this.add.image(gameState.width - 50, this.constants.centerY, 'pause').setOrigin(0.5, 0.5).setDisplaySize(40, 40);
+    this.objects.pauseButton = this.add.rectangle(gameConfig.width - 50, gameConfig.centerY, 50, 50).setOrigin(0.5, 0.5).setStrokeStyle(2, 0xFFFFFF);
+    this.objects.pauseIcon = this.add.image(gameConfig.width - 50, gameConfig.centerY, 'pause').setOrigin(0.5, 0.5).setDisplaySize(40, 40);
 
     this.objects.pauseButton.on('pointerover', () => {this.objects.pauseButton.setScale(1.1)});
     this.objects.pauseButton.on('pointerout', () => {this.objects.pauseButton.setScale(1)});
@@ -89,13 +63,13 @@ class GameScene extends Phaser.Scene {
       this.pause();
     });
 
-    this.objects.pauseBackgound = this.add.rectangle(0, 0, gameState.width, gameState.height, 0x000000).setOrigin(0, 0).setAlpha(0);
-    this.objects.pauseTextP1 = this.add.text(this.constants.centerX, this.constants.centerY * 1.5, "paused", { fontSize: 40, color: '#FFFFFF' }).setOrigin(0.5, 0.5).setAlpha(0);
-    this.objects.pauseTextP2 = this.add.text(this.constants.centerX, this.constants.centerY * 0.5, "paused", { fontSize: 40, color: '#FFFFFF' }).setOrigin(0.5, 0.5).setFlip(true, true).setAlpha(0);
-    this.objects.continueButton = this.add.rectangle(this.constants.centerX - 90, this.constants.centerY, 120, 120).setOrigin(0.5, 0.5).setStrokeStyle(8, 0xFFFFFF).setAlpha(0);
-    this.objects.continueIcon = this.add.image(this.constants.centerX - 90, this.constants.centerY, 'play').setOrigin(0.5, 0.5).setDisplaySize(80, 80).setAlpha(0);
-    this.objects.quitButton = this.add.rectangle(this.constants.centerX + 90, this.constants.centerY, 120, 120).setOrigin(0.5, 0.5).setStrokeStyle(8, 0xFFFFFF).setAlpha(0);
-    this.objects.quitIcon = this.add.image(this.constants.centerX + 90, this.constants.centerY, 'quit').setOrigin(0.5, 0.5).setDisplaySize(80, 80).setAlpha(0);
+    this.objects.pauseBackgound = this.add.rectangle(0, 0, gameConfig.width, gameConfig.height, 0x000000).setOrigin(0, 0).setAlpha(0);
+    this.objects.pauseTextP1 = this.add.text(gameConfig.centerX, gameConfig.centerY * 1.5, "paused", { fontSize: 40, color: '#FFFFFF' }).setOrigin(0.5, 0.5).setAlpha(0);
+    this.objects.pauseTextP2 = this.add.text(gameConfig.centerX, gameConfig.centerY * 0.5, "paused", { fontSize: 40, color: '#FFFFFF' }).setOrigin(0.5, 0.5).setFlip(true, true).setAlpha(0);
+    this.objects.continueButton = this.add.rectangle(gameConfig.centerX - 90, gameConfig.centerY, 120, 120).setOrigin(0.5, 0.5).setStrokeStyle(8, 0xFFFFFF).setAlpha(0);
+    this.objects.continueIcon = this.add.image(gameConfig.centerX - 90, gameConfig.centerY, 'play').setOrigin(0.5, 0.5).setDisplaySize(80, 80).setAlpha(0);
+    this.objects.quitButton = this.add.rectangle(gameConfig.centerX + 90, gameConfig.centerY, 120, 120).setOrigin(0.5, 0.5).setStrokeStyle(8, 0xFFFFFF).setAlpha(0);
+    this.objects.quitIcon = this.add.image(gameConfig.centerX + 90, gameConfig.centerY, 'quit').setOrigin(0.5, 0.5).setDisplaySize(80, 80).setAlpha(0);
 
     this.objects.continueButton.on('pointerover', () => {this.objects.continueButton.setScale(1.1)});
     this.objects.continueButton.on('pointerout', () => {this.objects.continueButton.setScale(1)});
@@ -142,7 +116,7 @@ class GameScene extends Phaser.Scene {
     this.objects.quitButton.disableInteractive();
 
     this.tweens.add({
-      targets: this.add.rectangle(0, 0, gameState.width, gameState.height, 0x000000, 0).setOrigin(0, 0),
+      targets: this.add.rectangle(0, 0, gameConfig.width, gameConfig.height, 0x000000, 0).setOrigin(0, 0),
       fillAlpha: 1,
       duration: 500,
       onComplete: () => {
@@ -169,7 +143,7 @@ class GameScene extends Phaser.Scene {
     this.objects.balls.mainBall.setAlpha(0);
     this.objects.paddles.setAlpha(0);
 
-    this.objects.balls.mainBall.setPosition(this.constants.centerX, this.constants.centerY);
+    this.objects.balls.mainBall.setPosition(gameConfig.centerX, gameConfig.centerY);
     this.objects.paddles.setupNewRoundPosition();
 
     this.objects.balls.mainBall.trail.stop();
@@ -233,7 +207,7 @@ class GameScene extends Phaser.Scene {
 
     this.tweens.add({
       targets: this.objects.paddles.p1,
-      y: gameState.height - this.constants.paddleYOffset,
+      y: gameConfig.height - gameConfig.paddleYOffset,
       duration: 1000,
       ease: "Back",
       easeParams: [3]
@@ -241,7 +215,7 @@ class GameScene extends Phaser.Scene {
 
     this.tweens.add({
       targets: this.objects.paddles.p2,
-      y: this.constants.paddleYOffset,
+      y: gameConfig.paddleYOffset,
       duration: 1000,
       ease: "Back",
       easeParams: [3]
@@ -249,7 +223,7 @@ class GameScene extends Phaser.Scene {
 
     this.tweens.add({
       targets: this.objects.balls.mainBall,
-      y: this.constants.centerY + (toSideP1 ? this.constants.ballRadius : -this.constants.ballRadius) * 5,
+      y: gameConfig.centerY + (toSideP1 ? gameConfig.ballRadius : -gameConfig.ballRadius) * 5,
       duration: 1500,
       delay: 1000,
       ease: "Elastic",
@@ -264,7 +238,7 @@ class GameScene extends Phaser.Scene {
     });
 
     var ballInitialAngle = Math.random() * 30 + 30 + (Math.random() < 0.5 ? 0 : 90);
-    var [velocityX, velocityY] = this.getVelocityXY(ballInitialAngle, this.constants.ballInitialVelocity, toSideP1);
+    var [velocityX, velocityY] = this.getVelocityXY(ballInitialAngle, gameConfig.ballInitialVelocity, toSideP1);
     this.objects.balls.mainBall.setVelocity(velocityX, velocityY);
   }
 
@@ -339,18 +313,18 @@ class GameScene extends Phaser.Scene {
       delay: 500
     });
 
-    this.objects.resultBackground = this.add.rectangle(0, 0, gameState.width, gameState.height, 0x000000, 0.7).setOrigin(0, 0).setAlpha(0);
-    this.objects.p1Result = this.add.text(this.constants.centerX, this.constants.centerY * 1.5, p1Win ? "Win" : "Lose", {fontSize: 120, color: '#FFFFFF'}).setOrigin(0.5, 0.5).setAlpha(0);
-    this.objects.p2Result = this.add.text(this.constants.centerX, this.constants.centerY * 0.5, p1Win ? "Lose" : "Win", {fontSize: 120, color: '#FFFFFF'}).setOrigin(0.5, 0.5).setFlip(true, true).setAlpha(0);
+    this.objects.resultBackground = this.add.rectangle(0, 0, gameConfig.width, gameConfig.height, 0x000000, 0.7).setOrigin(0, 0).setAlpha(0);
+    this.objects.p1Result = this.add.text(gameConfig.centerX, gameConfig.centerY * 1.5, p1Win ? "Win" : "Lose", {fontSize: 120, color: '#FFFFFF'}).setOrigin(0.5, 0.5).setAlpha(0);
+    this.objects.p2Result = this.add.text(gameConfig.centerX, gameConfig.centerY * 0.5, p1Win ? "Lose" : "Win", {fontSize: 120, color: '#FFFFFF'}).setOrigin(0.5, 0.5).setFlip(true, true).setAlpha(0);
 
-    this.objects.endMatchButton = this.add.rectangle(gameState.width - 50, this.constants.centerY, 50, 50).setOrigin(0.5, 0.5).setStrokeStyle(2, 0xFFFFFF).setAlpha(0);
-    this.objects.endMatchIcon = this.add.image(gameState.width - 50, this.constants.centerY, 'quit').setOrigin(0.5, 0.5).setDisplaySize(40, 40).setAlpha(0);
+    this.objects.endMatchButton = this.add.rectangle(gameConfig.width - 50, gameConfig.centerY, 50, 50).setOrigin(0.5, 0.5).setStrokeStyle(2, 0xFFFFFF).setAlpha(0);
+    this.objects.endMatchIcon = this.add.image(gameConfig.width - 50, gameConfig.centerY, 'quit').setOrigin(0.5, 0.5).setDisplaySize(40, 40).setAlpha(0);
 
     this.objects.endMatchButton.on('pointerover', () => {this.objects.endMatchButton.setScale(1.1)});
     this.objects.endMatchButton.on('pointerout', () => {this.objects.endMatchButton.setScale(1)});
     this.objects.endMatchButton.once('pointerup', () => {
       this.tweens.add({
-        targets: this.add.rectangle(0, 0, gameState.width, gameState.height, 0x000000, 0).setOrigin(0, 0).setDepth(2),
+        targets: this.add.rectangle(0, 0, gameConfig.width, gameConfig.height, 0x000000, 0).setOrigin(0, 0).setDepth(2),
         fillAlpha: 1,
         duration: 500,
         onComplete: () => {
@@ -369,8 +343,8 @@ class GameScene extends Phaser.Scene {
 
     this.tweens.add({
       targets: p1Win ? this.objects.paddles.p1 : this.objects.paddles.p2,
-      x: this.constants.centerX,
-      y: this.constants.centerY,
+      x: gameConfig.centerX,
+      y: gameConfig.centerY,
       scaleX: 2,
       scaleY: 2,
       duration: 1000,
@@ -392,14 +366,14 @@ class GameScene extends Phaser.Scene {
 
     if (up) {
       this.objects.p1ScoreText.setText(++this.variables.p1Score);
-      lastPoint = this.variables.p1Score == this.constants.pointsToWin;
+      lastPoint = this.variables.p1Score == gameConfig.pointsToWin;
     } else if (down) {
       this.objects.p2ScoreText.setText(++this.variables.p2Score);
-      lastPoint = this.variables.p2Score == this.constants.pointsToWin;
+      lastPoint = this.variables.p2Score == gameConfig.pointsToWin;
     } else if (left) {
       this.objects.effects.ballLeftCollision.emitParticleAt(0, ball.gameObject.y);
     } else if (right) {
-      this.objects.effects.ballRightCollision.emitParticleAt(gameState.width, ball.gameObject.y);
+      this.objects.effects.ballRightCollision.emitParticleAt(gameConfig.width, ball.gameObject.y);
     }
 
     if (up || down) {
@@ -418,10 +392,10 @@ class GameScene extends Phaser.Scene {
     ball.fromPaddle = paddle;
 
     if (ball.body.touching.left) {
-      this.objects.effects.ballLeftCollision.emitParticleAt(paddle.x + this.constants.paddleHalfWidth, ball.y);
+      this.objects.effects.ballLeftCollision.emitParticleAt(paddle.x + gameConfig.paddleHalfWidth, ball.y);
       return;
     } else if (ball.body.touching.right) {
-      this.objects.effects.ballRightCollision.emitParticleAt(paddle.x - this.constants.paddleHalfWidth, ball.y);
+      this.objects.effects.ballRightCollision.emitParticleAt(paddle.x - gameConfig.paddleHalfWidth, ball.y);
       return;
     }
 
@@ -429,8 +403,8 @@ class GameScene extends Phaser.Scene {
 
     var [angle, velocity] = this.getAngleVelocity(ball.body.velocity.x, ball.body.velocity.y);
 
-    var diffRatio = (ball.x - paddle.x) / this.constants.paddleHalfWidth;
-    var angleAdjust = diffRatio * this.constants.paddleMaxBounceAngleAdjust;
+    var diffRatio = (ball.x - paddle.x) / gameConfig.paddleHalfWidth;
+    var angleAdjust = diffRatio * gameConfig.paddleMaxBounceAngleAdjust;
 
     //  1. /^ R: - L: +
     //  2. ^\ R: - L: +
@@ -441,24 +415,24 @@ class GameScene extends Phaser.Scene {
     if (newAngle > 0) {
       newAngle -= angleAdjust;
 
-      if (newAngle > this.constants.ballPosMaxAngle) {
-        newAngle = this.constants.ballPosMaxAngle;
-      } else if (newAngle < this.constants.ballPosMinAngle) {
-        newAngle = this.constants.ballPosMinAngle;
+      if (newAngle > gameConfig.ballPosMaxAngle) {
+        newAngle = gameConfig.ballPosMaxAngle;
+      } else if (newAngle < gameConfig.ballPosMinAngle) {
+        newAngle = gameConfig.ballPosMinAngle;
       }
     } else {
       newAngle += angleAdjust;
 
-      if (newAngle > this.constants.ballNegMaxAngle) {
-        newAngle = this.constants.ballNegMaxAngle;
-      } else if (newAngle < this.constants.ballNegMinAngle) {
-        newAngle = this.constants.ballNegMinAngle;
+      if (newAngle > gameConfig.ballNegMaxAngle) {
+        newAngle = gameConfig.ballNegMaxAngle;
+      } else if (newAngle < gameConfig.ballNegMinAngle) {
+        newAngle = gameConfig.ballNegMinAngle;
       }
     }
 
-    var newVelocity = velocity * this.constants.ballBounce;
-    if (newVelocity > this.constants.ballMaxVelocity) {
-      newVelocity = this.constants.ballMaxVelocity;
+    var newVelocity = velocity * gameConfig.ballBounce;
+    if (newVelocity > gameConfig.ballMaxVelocity) {
+      newVelocity = gameConfig.ballMaxVelocity;
     }
 
     var [velocityX, velocityY] = this.getVelocityXY(Math.abs(newAngle), newVelocity, newAngle < 0);
@@ -468,16 +442,16 @@ class GameScene extends Phaser.Scene {
   ballPaddleOverlap(ball, paddle) {
     if (ball.x > paddle.x) {
       if (ball.body.velocity.x < 0) {
-        this.objects.effects.ballLeftCollision.emitParticleAt(paddle.x + this.constants.paddleHalfWidth, ball.y);
+        this.objects.effects.ballLeftCollision.emitParticleAt(paddle.x + gameConfig.paddleHalfWidth, ball.y);
         ball.setVelocityX(-ball.body.velocity.x);
       }
-      ball.x = paddle.x + this.constants.paddleHalfWidth + this.constants.ballRadius;
+      ball.x = paddle.x + gameConfig.paddleHalfWidth + gameConfig.ballRadius;
     } else {
       if (ball.body.velocity.x > 0) {
-        this.objects.effects.ballRightCollision.emitParticleAt(paddle.x - this.constants.paddleHalfWidth, ball.y);
+        this.objects.effects.ballRightCollision.emitParticleAt(paddle.x - gameConfig.paddleHalfWidth, ball.y);
         ball.setVelocityX(-ball.body.velocity.x);
       }
-      ball.x = paddle.x - this.constants.paddleHalfWidth - this.constants.ballRadius;
+      ball.x = paddle.x - gameConfig.paddleHalfWidth - gameConfig.ballRadius;
     }
   }
 

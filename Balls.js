@@ -31,7 +31,7 @@ class Balls {
   constructor(scene) {
     this.scene = scene;
 
-    this.mainBall = new Ball(scene, scene.constants.centerX, scene.constants.centerY);
+    this.mainBall = new Ball(scene, gameConfig.centerX, gameConfig.centerY);
     this.phaserGroup = scene.physics.add.group([this.mainBall]);
     this.children = this.phaserGroup.getChildren();
   }
@@ -102,23 +102,23 @@ class Balls {
     var angleAdjust = Math.random() * 60 + 30;
     if (newBallAngle > 90) {
       newBallAngle -= angleAdjust;
-      if (newBallAngle < this.scene.constants.ballPosMinAngle) {
-        newBallAngle = this.scene.constants.ballPosMinAngle;
+      if (newBallAngle < gameConfig.ballPosMinAngle) {
+        newBallAngle = gameConfig.ballPosMinAngle;
       }
     } else if (newBallAngle > 0) {
       newBallAngle += angleAdjust;
-      if (newBallAngle > this.scene.constants.ballPosMaxAngle) {
-        newBallAngle = this.scene.constants.ballPosMaxAngle;
+      if (newBallAngle > gameConfig.ballPosMaxAngle) {
+        newBallAngle = gameConfig.ballPosMaxAngle;
       }
     } else if (newBallAngle > -90) {
       newBallAngle -= angleAdjust;
-      if (newBallAngle < this.scene.constants.ballNegMinAngle) {
-        newBallAngle = this.scene.constants.ballNegMinAngle;
+      if (newBallAngle < gameConfig.ballNegMinAngle) {
+        newBallAngle = gameConfig.ballNegMinAngle;
       }
     } else {
       newBallAngle += angleAdjust;
-      if (newBallAngle > this.scene.constants.ballNegMaxAngle) {
-        newBallAngle = this.scene.constants.ballNegMaxAngle;
+      if (newBallAngle > gameConfig.ballNegMaxAngle) {
+        newBallAngle = gameConfig.ballNegMaxAngle;
       }
     }
 

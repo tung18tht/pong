@@ -42,8 +42,8 @@ class Effects {
 
     this.endMatch = this.createEmitter({
       on: false,
-      x: scene.constants.centerX,
-      y: scene.constants.centerY,
+      x: gameConfig.centerX,
+      y: gameConfig.centerY,
       lifespan: {min: 1000, max: 2000},
       speed: {min: 200, max: 400},
       quantity: 3,
