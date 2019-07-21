@@ -86,5 +86,6 @@ class PowerUps {
 
 PowerUps.types = {
   X2: "x2",
-  EXPAND: "expand"
+  EXPAND: "expand",
+  SHRINK: "shrink"
 }
