@@ -31,7 +31,7 @@ class MenuScene extends Phaser.Scene {
       targets: [title, copyright, playButton, playIcon],
       alpha: 1,
       duration: 500,
-      onComplete: () => {playButton.setInteractive()}
+      onComplete: () => {playButton.setInteractive({useHandCursor: true})}
     });
   }
 }

@@ -116,8 +116,8 @@ class GameScene extends Phaser.Scene {
       alpha: 1,
       duration: 500,
       onComplete: () => {
-        this.objects.continueButton.setInteractive();
-        this.objects.quitButton.setInteractive();
+        this.objects.continueButton.setInteractive({useHandCursor: true});
+        this.objects.quitButton.setInteractive({useHandCursor: true});
       }
     });
   }
@@ -193,7 +193,7 @@ class GameScene extends Phaser.Scene {
       targets: [this.objects.countdownBackground, this.objects.countdownP1, this.objects.countdownP2, this.objects.pauseIcon, this.objects.pauseButton],
       alpha: 1,
       duration: 500,
-      onComplete: () => {this.objects.pauseButton.setInteractive()}
+      onComplete: () => {this.objects.pauseButton.setInteractive({useHandCursor: true})}
     });
 
     this.tweens.add({
@@ -364,7 +364,7 @@ class GameScene extends Phaser.Scene {
       alpha: 1,
       duration: 500,
       delay: 1000,
-      onComplete: () => {this.objects.endMatchButton.setInteractive()}
+      onComplete: () => {this.objects.endMatchButton.setInteractive({useHandCursor: true})}
     });
 
     this.tweens.add({
