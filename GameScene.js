@@ -244,7 +244,7 @@ class GameScene extends Phaser.Scene {
 
   endRound() {
     this.physics.pause();
-    this.tweens.killAll();
+    this.tweens.killTweensOf([this.objects.p1ScoreText, this.objects.p2ScoreText]);
     this.time.removeAllEvents();
 
     this.objects.balls.stopTrails();
@@ -279,7 +279,7 @@ class GameScene extends Phaser.Scene {
 
   endMatch(p1Win) {
     this.physics.pause();
-    this.tweens.killAll();
+    this.tweens.killTweensOf([this.objects.p1ScoreText, this.objects.p2ScoreText]);
     this.time.removeAllEvents();
 
     this.objects.balls.stopTrails();
@@ -464,6 +464,7 @@ class GameScene extends Phaser.Scene {
         break;
       case PowerUps.types.EXPAND:
         var targetPaddle = ball.fromPaddle;
+        targetPaddle.notifyPowerUp(powerUp.type);
 
         targetPaddle.trueScaleX += 0.5;
         this.tweens.add({
@@ -485,6 +486,7 @@ class GameScene extends Phaser.Scene {
         break;
       case PowerUps.types.SHRINK:
         var targetPaddle = ball.fromPaddle;
+        targetPaddle.notifyPowerUp(powerUp.type);
 
         targetPaddle.trueScaleX -= 0.5;
         this.tweens.add({

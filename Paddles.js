@@ -2,6 +2,8 @@ class Paddle extends Phaser.Physics.Arcade.Sprite {
   constructor(scene, p1) {
     super(scene, gameConfig.centerX, p1 ? gameConfig.height - gameConfig.paddleYOffset : gameConfig.paddleYOffset, "paddle");
 
+    this.scene = scene;
+
     scene.add.existing(this);
     scene.physics.add.existing(this);
 
@@ -27,6 +29,31 @@ class Paddle extends Phaser.Physics.Arcade.Sprite {
       scale: 0.2,
       angle: p1 ? {min: -160, max: -20} : {min: 20, max: 160},
       alpha: {start: 0.5, end: 0}
+    });
+
+    this.powerUpsNoti = {};
+    Object.values(PowerUps.types).forEach(powerUp => {
+      this.powerUpsNoti[powerUp] = scene.add.image(gameConfig.centerX, gameConfig.centerY * (p1 ? 1.5 : 0.5), powerUp).setOrigin(0.5, 0.5).setDisplaySize(250, 250).setAlpha(0);
+    });
+  }
+
+  notifyPowerUp(type) {
+    this.scene.tweens.killTweensOf(this.powerUpsNoti[type]);
+    this.powerUpsNoti[type].setAlpha(0.5);
+
+    this.scene.tweens.add({
+      targets: this.powerUpsNoti[type],
+      alpha: 0.3,
+      duration: 100,
+      yoyo: true,
+      repeat: 1,
+      onComplete: () => {
+        this.scene.tweens.add({
+          targets: this.powerUpsNoti[type],
+          alpha: 0,
+          duration: 100
+        });
+      }
     });
   }
 
