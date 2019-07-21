@@ -2,8 +2,6 @@ class Paddle extends Phaser.Physics.Arcade.Sprite {
   constructor(scene, p1) {
     super(scene, gameConfig.centerX, p1 ? gameConfig.height - gameConfig.paddleYOffset : gameConfig.paddleYOffset, "paddle");
 
-    this.scene = scene;
-
     scene.add.existing(this);
     scene.physics.add.existing(this);
 
@@ -54,8 +52,6 @@ class Paddle extends Phaser.Physics.Arcade.Sprite {
 
 class Paddles {
   constructor(scene) {
-    this.scene = scene;
-
     this.p1 = new Paddle(scene, true);
     this.p2 = new Paddle(scene, false);
 
