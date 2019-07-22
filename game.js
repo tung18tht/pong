@@ -26,6 +26,7 @@ gameConfig.ballDiameter = gameConfig.ballRadius * 2;
 gameConfig.ballBounce = 1.02;
 gameConfig.ballInitialVelocity = 400;
 gameConfig.ballMaxVelocity = 1000;
+gameConfig.ballMinVelocity = 300;
 gameConfig.ballAngleLimit = 20;
 gameConfig.ballPosMaxAngle = 180 - gameConfig.ballAngleLimit;
 gameConfig.ballPosMinAngle = gameConfig.ballAngleLimit;

@@ -44,6 +44,7 @@ class GameScene extends Phaser.Scene {
     this.objects.balls = new Balls(this);
     this.objects.powerUps = new PowerUps(this);
 
+    this.physics.add.collider(this.objects.balls.phaserGroup, this.objects.balls.phaserGroup, (ball1, ball2) => {this.ballBallCollide(ball1, ball2)});
     this.physics.add.collider(this.objects.balls.phaserGroup, this.objects.paddles.phaserGroup, (ball, paddle) => {this.ballPaddleCollide(ball, paddle)});
     this.physics.add.overlap(this.objects.balls.phaserGroup, this.objects.paddles.phaserGroup, (ball, paddle) => {this.ballPaddleOverlap(ball, paddle)});
     this.physics.add.overlap(this.objects.balls.phaserGroup, this.objects.powerUps.phaserGroup, (ball, powerUp) => {this.ballPowerUpOverlap(ball, powerUp)});
@@ -388,6 +389,15 @@ class GameScene extends Phaser.Scene {
         this.events.once("roundEnded", () => {this.startNewRound(down)});
       }
     }
+  }
+
+  ballBallCollide(ball1, ball2) {
+    this.time.addEvent({
+      delay: 100, callback: () => {
+        ball1.checkMinVelocity();
+        ball2.checkMinVelocity();
+      }
+    });
   }
 
   ballPaddleCollide(ball, paddle) {
