@@ -19,7 +19,7 @@ class Paddle extends Phaser.Physics.Arcade.Sprite {
       scale: 0.3,
       angle: p1 ? {min: 30, max: 150} : {min: 210, max: 330},
       alpha: {start: 0.5, end: 0},
-      emitZone: {source: new Phaser.Geom.Line(-gameConfig.paddleHalfWidth * 0.8, 0, gameConfig.paddleHalfWidth * 0.8, 0)}
+      emitZone: {source: new Phaser.Geom.Line(-gameConfig.paddleHalfTrailWidth, 0, gameConfig.paddleHalfTrailWidth, 0)}
     });
 
     this.ballCollisionEffect = scene.objects.effects.createEmitter({
@@ -96,6 +96,8 @@ class Paddle extends Phaser.Physics.Arcade.Sprite {
       scaleX: this.trueScaleX,
       duration: 500
     });
+
+    this.trail.setEmitZone({source: new Phaser.Geom.Line(-gameConfig.paddleHalfTrailWidth * this.trueScaleX, 0, gameConfig.paddleHalfTrailWidth * this.trueScaleX, 0)});
   }
 }
 
@@ -120,6 +122,9 @@ class Paddles {
   setupNewRoundScale() {
     this.p1.setScale(1, 0);
     this.p2.setScale(1, 0);
+
+    this.p1.trail.setEmitZone({source: new Phaser.Geom.Line(-gameConfig.paddleHalfTrailWidth, 0, gameConfig.paddleHalfTrailWidth, 0)});
+    this.p2.trail.setEmitZone({source: new Phaser.Geom.Line(-gameConfig.paddleHalfTrailWidth, 0, gameConfig.paddleHalfTrailWidth, 0)});
   }
 
   startTrails() {

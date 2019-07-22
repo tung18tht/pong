@@ -12,6 +12,7 @@ gameConfig.powerUpsDuration = 5000;
 gameConfig.paddleWidth = 120;
 gameConfig.paddleHeight = 15;
 gameConfig.paddleHalfWidth = gameConfig.paddleWidth / 2;
+gameConfig.paddleHalfTrailWidth = gameConfig.paddleHalfWidth * 0.8;
 gameConfig.paddleMinX = gameConfig.paddleHalfWidth;
 gameConfig.paddleMaxX = gameConfig.width - gameConfig.paddleHalfWidth;
 gameConfig.paddleYOffset = gameConfig.paddleHeight * 3;
