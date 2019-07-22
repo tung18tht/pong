@@ -464,47 +464,27 @@ class GameScene extends Phaser.Scene {
       case PowerUps.types.X2:
         this.objects.balls.double(ball);
         break;
+
       case PowerUps.types.EXPAND:
         var targetPaddle = ball.fromPaddle;
         targetPaddle.notifyPowerUp(powerUp.type);
 
-        targetPaddle.trueScaleX += 0.5;
-        this.tweens.add({
-          targets: targetPaddle,
-          scaleX: targetPaddle.trueScaleX,
-          duration: 1000
-        });
-
+        targetPaddle.updateScaleX(gameConfig.paddleExpand);
         this.time.addEvent({
-          delay: 5000, callback: () => {
-            targetPaddle.trueScaleX -= 0.5;
-            this.tweens.add({
-              targets: targetPaddle,
-              scaleX: targetPaddle.trueScaleX,
-              duration: 1000
-            });
+          delay: gameConfig.powerUpsDuration, callback: () => {
+            targetPaddle.updateScaleX(-gameConfig.paddleExpand);
           }
         });
         break;
+
       case PowerUps.types.SHRINK:
         var targetPaddle = ball.fromPaddle;
         targetPaddle.notifyPowerUp(powerUp.type);
 
-        targetPaddle.trueScaleX -= 0.5;
-        this.tweens.add({
-          targets: targetPaddle,
-          scaleX: targetPaddle.trueScaleX,
-          duration: 1000
-        });
-
+        targetPaddle.updateScaleX(gameConfig.paddleShrink);
         this.time.addEvent({
-          delay: 5000, callback: () => {
-            targetPaddle.trueScaleX += 0.5;
-            this.tweens.add({
-              targets: targetPaddle,
-              scaleX: targetPaddle.trueScaleX,
-              duration: 1000
-            });
+          delay: gameConfig.powerUpsDuration, callback: () => {
+            targetPaddle.updateScaleX(-gameConfig.paddleShrink);
           }
         });
         break;

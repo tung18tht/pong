@@ -7,6 +7,7 @@ gameConfig.centerY = gameConfig.height / 2;
 
 gameConfig.pointsToWin = 3;
 gameConfig.powerUpsInterval = 4000;
+gameConfig.powerUpsDuration = 5000;
 
 gameConfig.paddleWidth = 120;
 gameConfig.paddleHeight = 15;
@@ -16,6 +17,9 @@ gameConfig.paddleMaxX = gameConfig.width - gameConfig.paddleHalfWidth;
 gameConfig.paddleYOffset = gameConfig.paddleHeight * 3;
 gameConfig.paddleStepPerMs = 1000 / 1000;
 gameConfig.paddleMaxBounceAngleAdjust = 20;
+gameConfig.paddleMinScaleX = 0.3;
+gameConfig.paddleExpand = 0.5;
+gameConfig.paddleShrink = -0.3;
 
 gameConfig.ballRadius = 15;
 gameConfig.ballDiameter = gameConfig.ballRadius * 2;

@@ -10,6 +10,7 @@ class Paddle extends Phaser.Physics.Arcade.Sprite {
     this.setOrigin(0.5, 0.5).setCollideWorldBounds(true).setImmovable(true);
 
     this.trueScaleX = 1;
+    this.scaleXDebt = 0;
 
     this.trail = scene.objects.effects.createEmitter({
       follow: this,
@@ -74,6 +75,24 @@ class Paddle extends Phaser.Physics.Arcade.Sprite {
     } else if (this.x < gameConfig.paddleMinX) {
       this.x = gameConfig.paddleMinX;
     }
+  }
+
+  updateScaleX(value) {
+    this.trueScaleX += value;
+    this.trueScaleX -= this.scaleXDebt;
+    this.scaleXDebt =  0;
+
+    if (this.trueScaleX < gameConfig.paddleMinScaleX) {
+      this.scaleXDebt = gameConfig.paddleMinScaleX - this.trueScaleX;
+      this.trueScaleX = gameConfig.paddleMinScaleX;
+    }
+
+    this.scene.tweens.killTweensOf(this);
+    this.scene.tweens.add({
+      targets: this,
+      scaleX: this.trueScaleX,
+      duration: 500
+    });
   }
 }
 
