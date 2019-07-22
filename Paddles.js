@@ -7,7 +7,7 @@ class Paddle extends Phaser.Physics.Arcade.Sprite {
     scene.add.existing(this);
     scene.physics.add.existing(this);
 
-    this.setOrigin(0.5, 0.5).setCollideWorldBounds(true).setImmovable(true);
+    this.setOrigin(0.5, 0.5).setImmovable(true);
 
     this.trueScaleX = 1;
     this.scaleXDebt = 0;
