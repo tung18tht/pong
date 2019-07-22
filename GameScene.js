@@ -23,12 +23,13 @@ class GameScene extends Phaser.Scene {
     ballGraphic.generateTexture('ball', gameConfig.ballRadius * 2, gameConfig.ballRadius * 2)
     ballGraphic.destroy();
 
-    this.load.image('play', 'assets/play.png');
-    this.load.image('quit', 'assets/quit.png');
-    this.load.image('pause', 'assets/pause.png');
+    this.load.image('play', 'assets/play.svg');
+    this.load.image('quit', 'assets/quit.svg');
+    this.load.image('pause', 'assets/pause.svg');
 
     Object.values(PowerUps.types).forEach(powerUp => {
-      this.load.image(powerUp, 'assets/powerups/' + powerUp + '.png');
+      this.load.image(powerUp, 'assets/powerups/' + powerUp + '.svg');
+      this.load.image(powerUp + 'nobound', 'assets/powerups/' + powerUp + '_nobound.svg');
     });
   }
 
@@ -175,6 +176,7 @@ class GameScene extends Phaser.Scene {
       alpha: 0,
       duration: 500,
       delay: 2500,
+      // TOFIX
       onStart: () => {this.objects.pauseButton.disableInteractive()},
       onComplete: () => {
         this.physics.resume();
