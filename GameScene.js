@@ -84,6 +84,7 @@ class GameScene extends Phaser.Scene {
   }
 
   pause() {
+    this.tweens.killAll();
     this.endRound();
 
     this.tweens.add({
@@ -176,7 +177,6 @@ class GameScene extends Phaser.Scene {
       alpha: 0,
       duration: 500,
       delay: 2500,
-      // TOFIX
       onStart: () => {this.objects.pauseButton.disableInteractive()},
       onComplete: () => {
         this.physics.resume();
