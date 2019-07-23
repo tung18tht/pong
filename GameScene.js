@@ -414,8 +414,6 @@ class GameScene extends Phaser.Scene {
 
     paddle.ballCollisionEffect.emitParticleAt(ball.x, paddle.y);
 
-    var angle = this.getAngle(ball.body.velocity.x, ball.body.velocity.y);
-
     // TOCHECK
     var diffRatio = (ball.x - paddle.x) / gameConfig.paddleHalfWidth;
     var angleAdjust = diffRatio * gameConfig.paddleMaxBounceAngleAdjust;
@@ -425,7 +423,7 @@ class GameScene extends Phaser.Scene {
     //  3. \v R: + L: -
     //  4. v/ R: + L: -
 
-    var newAngle = -angle;
+    var newAngle = ball.body.angle * 180 / Math.PI;
     if (newAngle > 0) {
       newAngle -= angleAdjust;
 
@@ -504,10 +502,6 @@ class GameScene extends Phaser.Scene {
     }
 
     this.objects.powerUps.remove(powerUp);
-  }
-
-  getAngle(velocityX, velocityY) {
-    return Math.atan2(velocityY, velocityX) * 180 / Math.PI;
   }
 
   getVelocityXY(angleDegree, velocity, toSideP1) {

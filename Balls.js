@@ -27,8 +27,8 @@ class Ball extends Phaser.Physics.Arcade.Sprite {
   }
 
   checkMinVelocity() {
-    var angle = this.scene.getAngle(this.body.velocity.x, this.body.velocity.y);
     if (this.body.speed < gameConfig.ballMinVelocity) {
+      var angle = this.body.angle * 180 / Math.PI;
       var [newVelocityX, newVelocityY] = this.scene.getVelocityXY(Math.abs(angle), gameConfig.ballMinVelocity, angle > 0);
       this.setVelocity(newVelocityX, newVelocityY);
     }
@@ -95,7 +95,7 @@ class Balls {
     newBall.fromPaddle = ball.fromPaddle;
     this.phaserGroup.add(newBall);
 
-    var originalAngle = this.scene.getAngle(ball.body.velocity.x, ball.body.velocity.y);
+    var originalAngle = ball.body.angle * 180 / Math.PI;
     var newVelocity = ball.body.speed * 0.8;
     if (newVelocity < gameConfig.ballMinVelocity) {
       newVelocity = gameConfig.ballMinVelocity;
