@@ -26,12 +26,31 @@ class Ball extends Phaser.Physics.Arcade.Sprite {
     super.destroy(fromScene);
   }
 
-  checkMinVelocity() {
-    if (this.body.speed < gameConfig.ballMinVelocity) {
-      var angle = this.body.angle * 180 / Math.PI;
-      var [newVelocityX, newVelocityY] = this.scene.getVelocityXY(Math.abs(angle), gameConfig.ballMinVelocity, angle > 0);
-      this.setVelocity(newVelocityX, newVelocityY);
+  recomputeAngleVelocity() {
+    var newSpeed = this.body.speed;
+    if (newSpeed < gameConfig.ballMinVelocity) {
+      newSpeed = gameConfig.ballMinVelocity;
+    } else if (newSpeed > gameConfig.ballMaxVelocity) {
+      newSpeed = gameConfig.ballMaxVelocity;
     }
+
+    var newAngle = this.body.angle * 180 / Math.PI;
+    if (newAngle > 0) {
+      if (newAngle > Balls.constants.ballPosMaxAngle) {
+        newAngle = Balls.constants.ballPosMaxAngle;
+      } else if (newAngle < Balls.constants.ballPosMinAngle) {
+        newAngle = Balls.constants.ballPosMinAngle;
+      }
+    } else {
+      if (newAngle > Balls.constants.ballNegMaxAngle) {
+        newAngle = Balls.constants.ballNegMaxAngle;
+      } else if (newAngle < Balls.constants.ballNegMinAngle) {
+        newAngle = Balls.constants.ballNegMinAngle;
+      }
+    }
+
+    var [newVelocityX, newVelocityY] = this.scene.getVelocityXY(Math.abs(newAngle), newSpeed, newAngle > 0);
+    this.setVelocity(newVelocityX, newVelocityY);
   }
 }
 

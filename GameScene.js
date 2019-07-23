@@ -395,8 +395,8 @@ class GameScene extends Phaser.Scene {
     ball1.body.update(0);
     ball2.body.update(0);
 
-    ball1.checkMinVelocity();
-    ball2.checkMinVelocity();
+    ball1.recomputeAngleVelocity();
+    ball2.recomputeAngleVelocity();
   }
 
   ballPaddleCollide(ball, paddle) {
