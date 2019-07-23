@@ -403,6 +403,7 @@ class GameScene extends Phaser.Scene {
   ballPaddleCollide(ball, paddle) {
     ball.fromPaddle = paddle;
 
+    // TOCHECK
     if (ball.body.touching.left) {
       this.objects.effects.ballLeftCollision.emitParticleAt(paddle.x + gameConfig.paddleHalfWidth, ball.y);
       return;
@@ -413,8 +414,9 @@ class GameScene extends Phaser.Scene {
 
     paddle.ballCollisionEffect.emitParticleAt(ball.x, paddle.y);
 
-    var [angle, velocity] = this.getAngleVelocity(ball.body.velocity.x, ball.body.velocity.y);
+    var angle = this.getAngle(ball.body.velocity.x, ball.body.velocity.y);
 
+    // TOCHECK
     var diffRatio = (ball.x - paddle.x) / gameConfig.paddleHalfWidth;
     var angleAdjust = diffRatio * gameConfig.paddleMaxBounceAngleAdjust;
 
@@ -442,7 +444,7 @@ class GameScene extends Phaser.Scene {
       }
     }
 
-    var newVelocity = velocity * gameConfig.ballBounce;
+    var newVelocity = ball.body.speed * gameConfig.ballBounce;
     if (newVelocity > gameConfig.ballMaxVelocity) {
       newVelocity = gameConfig.ballMaxVelocity;
     }
@@ -452,6 +454,7 @@ class GameScene extends Phaser.Scene {
   }
 
   ballPaddleOverlap(ball, paddle) {
+    // TOCHECK
     if (ball.x > paddle.x) {
       if (ball.body.velocity.x < 0) {
         this.objects.effects.ballLeftCollision.emitParticleAt(paddle.x + gameConfig.paddleHalfWidth, ball.y);
@@ -503,11 +506,8 @@ class GameScene extends Phaser.Scene {
     this.objects.powerUps.remove(powerUp);
   }
 
-  getAngleVelocity(velocityX, velocityY) {
-    var velocity = Math.sqrt((velocityX ** 2) + (velocityY ** 2));
-    var angle = Math.atan2(velocityY, velocityX) * 180 / Math.PI;
-
-    return [angle, velocity];
+  getAngle(velocityX, velocityY) {
+    return Math.atan2(velocityY, velocityX) * 180 / Math.PI;
   }
 
   getVelocityXY(angleDegree, velocity, toSideP1) {
