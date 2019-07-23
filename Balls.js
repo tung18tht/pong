@@ -113,23 +113,23 @@ class Balls {
     var angleAdjust = Math.random() * 60 + 30;
     if (newBallAngle > 90) {
       newBallAngle -= angleAdjust;
-      if (newBallAngle < gameConfig.ballPosMinAngle) {
-        newBallAngle = gameConfig.ballPosMinAngle;
+      if (newBallAngle < Balls.constants.ballPosMinAngle) {
+        newBallAngle = Balls.constants.ballPosMinAngle;
       }
     } else if (newBallAngle > 0) {
       newBallAngle += angleAdjust;
-      if (newBallAngle > gameConfig.ballPosMaxAngle) {
-        newBallAngle = gameConfig.ballPosMaxAngle;
+      if (newBallAngle > Balls.constants.ballPosMaxAngle) {
+        newBallAngle = Balls.constants.ballPosMaxAngle;
       }
     } else if (newBallAngle > -90) {
       newBallAngle -= angleAdjust;
-      if (newBallAngle < gameConfig.ballNegMinAngle) {
-        newBallAngle = gameConfig.ballNegMinAngle;
+      if (newBallAngle < Balls.constants.ballNegMinAngle) {
+        newBallAngle = Balls.constants.ballNegMinAngle;
       }
     } else {
       newBallAngle += angleAdjust;
-      if (newBallAngle > gameConfig.ballNegMaxAngle) {
-        newBallAngle = gameConfig.ballNegMaxAngle;
+      if (newBallAngle > Balls.constants.ballNegMaxAngle) {
+        newBallAngle = Balls.constants.ballNegMaxAngle;
       }
     }
 

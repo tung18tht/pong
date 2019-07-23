@@ -8,11 +8,11 @@ class MenuScene extends Phaser.Scene {
   }
 
   create() {
-    var title = this.add.text(gameConfig.width / 2, 150, "PONG", {fontSize: 120, color: '#FFFFFF'}).setOrigin(0.5, 0.5).setAlpha(0);
-    var copyright = this.add.text(gameConfig.width / 2, gameConfig.height - 50, "© 2019 #tung18tht", {fontSize: 20, color: '#FFFFFF'}).setOrigin(0.5, 0.5).setAlpha(0);
+    var title = this.add.text(gameConfig.centerX, 150, "PONG", {fontSize: 120, color: '#FFFFFF'}).setOrigin(0.5, 0.5).setAlpha(0);
+    var copyright = this.add.text(gameConfig.centerX, gameConfig.height - 50, "© 2019 #tung18tht", {fontSize: 20, color: '#FFFFFF'}).setOrigin(0.5, 0.5).setAlpha(0);
 
-    var playButton = this.add.rectangle(gameConfig.width / 2, gameConfig.height / 2, 150, 150).setOrigin(0.5, 0.5).setStrokeStyle(10, 0xFFFFFF).setAlpha(0);
-    var playIcon = this.add.image(gameConfig.width / 2, gameConfig.height / 2, 'play').setOrigin(0.5, 0.5).setDisplaySize(100, 100).setAlpha(0);
+    var playButton = this.add.rectangle(gameConfig.centerX, gameConfig.centerY, 150, 150).setOrigin(0.5, 0.5).setStrokeStyle(10, 0xFFFFFF).setAlpha(0);
+    var playIcon = this.add.image(gameConfig.centerX, gameConfig.centerY, 'play').setOrigin(0.5, 0.5).setDisplaySize(100, 100).setAlpha(0);
 
     playButton.on('pointerover', () => {playButton.setScale(1.1)});
     playButton.on('pointerout', () => {playButton.setScale(1)});

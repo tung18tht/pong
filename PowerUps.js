@@ -8,7 +8,7 @@ class PowerUp extends Phaser.GameObjects.Image {
     scene.add.existing(this);
     scene.physics.add.existing(this);
 
-    this.setOrigin(0.5, 0.5).setDisplaySize(gameConfig.ballDiameter, gameConfig.ballDiameter);
+    this.setOrigin(0.5, 0.5).setDisplaySize(PowerUps.constants.powerUpsDiameter, PowerUps.constants.powerUpsDiameter);
 
     this.tween = scene.tweens.add({
       targets: this,
@@ -26,8 +26,8 @@ class PowerUp extends Phaser.GameObjects.Image {
       scale: 0.2,
       alpha: {start: 0.25, end: 0},
       emitCallback: (particle) => {
-        var newX = gameConfig.ballRadius * Math.cos(Math.atan2(particle.velocityY, particle.velocityX));
-        var newY = Math.sqrt((gameConfig.ballRadius ** 2) - (newX ** 2));
+        var newX = gameConfig.powerUpsRadius * Math.cos(Math.atan2(particle.velocityY, particle.velocityX));
+        var newY = Math.sqrt((PowerUps.constants.powerUpsRadiusSquared) - (newX ** 2));
         if (particle.velocityY < 0) {
           newY = -newY;
         }
@@ -82,10 +82,4 @@ class PowerUps {
   clear() {
     this.phaserGroup.clear(true, true);
   }
-}
-
-PowerUps.types = {
-  X2: "x2",
-  EXPAND: "expand",
-  SHRINK: "shrink"
 }

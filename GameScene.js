@@ -424,18 +424,18 @@ class GameScene extends Phaser.Scene {
     if (newAngle > 0) {
       newAngle -= angleAdjust;
 
-      if (newAngle > gameConfig.ballPosMaxAngle) {
-        newAngle = gameConfig.ballPosMaxAngle;
-      } else if (newAngle < gameConfig.ballPosMinAngle) {
-        newAngle = gameConfig.ballPosMinAngle;
+      if (newAngle > Balls.constants.ballPosMaxAngle) {
+        newAngle = Balls.constants.ballPosMaxAngle;
+      } else if (newAngle < Balls.constants.ballPosMinAngle) {
+        newAngle = Balls.constants.ballPosMinAngle;
       }
     } else {
       newAngle += angleAdjust;
 
-      if (newAngle > gameConfig.ballNegMaxAngle) {
-        newAngle = gameConfig.ballNegMaxAngle;
-      } else if (newAngle < gameConfig.ballNegMinAngle) {
-        newAngle = gameConfig.ballNegMinAngle;
+      if (newAngle > Balls.constants.ballNegMaxAngle) {
+        newAngle = Balls.constants.ballNegMaxAngle;
+      } else if (newAngle < Balls.constants.ballNegMinAngle) {
+        newAngle = Balls.constants.ballNegMinAngle;
       }
     }
 
