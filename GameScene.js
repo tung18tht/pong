@@ -392,12 +392,11 @@ class GameScene extends Phaser.Scene {
   }
 
   ballBallCollide(ball1, ball2) {
-    this.time.addEvent({
-      delay: 100, callback: () => {
-        ball1.checkMinVelocity();
-        ball2.checkMinVelocity();
-      }
-    });
+    ball1.body.update(0);
+    ball2.body.update(0);
+
+    ball1.checkMinVelocity();
+    ball2.checkMinVelocity();
   }
 
   ballPaddleCollide(ball, paddle) {
