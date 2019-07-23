@@ -73,10 +73,13 @@ class Paddle extends Phaser.Physics.Arcade.Sprite {
       this.x = targetX;
     }
 
-    if (this.x > gameConfig.paddleMaxX) {
-      this.x = gameConfig.paddleMaxX;
-    } else if (this.x < gameConfig.paddleMinX) {
-      this.x = gameConfig.paddleMinX;
+    if (this.x < this.body.halfWidth) {
+      this.x = this.body.halfWidth;
+    } else {
+      var maxX = gameConfig.width - this.body.halfWidth;
+      if (this.x > maxX) {
+        this.x = maxX;
+      }
     }
   }
 

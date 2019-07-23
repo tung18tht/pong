@@ -1,5 +1,6 @@
 var gameConfig = {};
 
+// TOCHECK
 gameConfig.width = 600;
 gameConfig.height = 800;
 gameConfig.centerX = gameConfig.width / 2;
@@ -13,8 +14,6 @@ gameConfig.paddleWidth = 120;
 gameConfig.paddleHeight = 15;
 gameConfig.paddleHalfWidth = gameConfig.paddleWidth / 2;
 gameConfig.paddleHalfTrailWidth = gameConfig.paddleHalfWidth * 0.8;
-gameConfig.paddleMinX = gameConfig.paddleHalfWidth;
-gameConfig.paddleMaxX = gameConfig.width - gameConfig.paddleHalfWidth;
 gameConfig.paddleYOffset = gameConfig.paddleHeight * 3;
 gameConfig.paddleStepPerMs = 1000 / 1000;
 gameConfig.paddleMaxBounceAngleAdjust = 20;

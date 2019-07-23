@@ -135,8 +135,8 @@ class GameScene extends Phaser.Scene {
 
     var [posYVelocityBall, negYVelocityBall] = this.objects.balls.getMostDeadlyBalls();
 
-    // this.objects.paddles.p1.move(this.input.x, delta);
-    this.objects.paddles.p1.move(posYVelocityBall.x, delta);
+    this.objects.paddles.p1.move(this.input.x, delta);
+    // this.objects.paddles.p1.move(posYVelocityBall.x, delta);
     this.objects.paddles.p2.move(negYVelocityBall.x, delta);
   }
 
@@ -402,19 +402,17 @@ class GameScene extends Phaser.Scene {
   ballPaddleCollide(ball, paddle) {
     ball.fromPaddle = paddle;
 
-    // TOCHECK
     if (ball.body.touching.left) {
-      this.objects.effects.ballLeftCollision.emitParticleAt(paddle.x + gameConfig.paddleHalfWidth, ball.y);
+      this.objects.effects.ballLeftCollision.emitParticleAt(paddle.body.right, ball.y);
       return;
     } else if (ball.body.touching.right) {
-      this.objects.effects.ballRightCollision.emitParticleAt(paddle.x - gameConfig.paddleHalfWidth, ball.y);
+      this.objects.effects.ballRightCollision.emitParticleAt(paddle.body.left, ball.y);
       return;
     }
 
     paddle.ballCollisionEffect.emitParticleAt(ball.x, paddle.y);
 
-    // TOCHECK
-    var diffRatio = (ball.x - paddle.x) / gameConfig.paddleHalfWidth;
+    var diffRatio = (ball.x - paddle.x) / paddle.body.halfWidth;
     var angleAdjust = diffRatio * gameConfig.paddleMaxBounceAngleAdjust;
 
     //  1. /^ R: - L: +
@@ -451,19 +449,18 @@ class GameScene extends Phaser.Scene {
   }
 
   ballPaddleOverlap(ball, paddle) {
-    // TOCHECK
     if (ball.x > paddle.x) {
       if (ball.body.velocity.x < 0) {
-        this.objects.effects.ballLeftCollision.emitParticleAt(paddle.x + gameConfig.paddleHalfWidth, ball.y);
+        this.objects.effects.ballLeftCollision.emitParticleAt(paddle.body.right, ball.y);
         ball.setVelocityX(-ball.body.velocity.x);
       }
-      ball.x = paddle.x + gameConfig.paddleHalfWidth + gameConfig.ballRadius;
+      ball.x = paddle.body.right + gameConfig.ballRadius;
     } else {
       if (ball.body.velocity.x > 0) {
-        this.objects.effects.ballRightCollision.emitParticleAt(paddle.x - gameConfig.paddleHalfWidth, ball.y);
+        this.objects.effects.ballRightCollision.emitParticleAt(paddle.body.left, ball.y);
         ball.setVelocityX(-ball.body.velocity.x);
       }
-      ball.x = paddle.x - gameConfig.paddleHalfWidth - gameConfig.ballRadius;
+      ball.x = paddle.body.left - gameConfig.ballRadius;
     }
   }
 
