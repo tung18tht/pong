@@ -10,7 +10,7 @@ gameConfig.pointsToWin = 3;
 gameConfig.paddleWidth = 120;
 gameConfig.paddleHeight = 15;
 gameConfig.paddleYOffset = gameConfig.paddleHeight * 3;
-gameConfig.paddleStepPerMs = 1000 / 1000;
+gameConfig.paddleStepPerMs = 2000 / 1000;
 gameConfig.paddleMaxBounceAngleAdjust = 20;
 gameConfig.paddleMinScaleX = 0.3;
 
@@ -27,6 +27,7 @@ gameConfig.powerUpsRadius = gameConfig.ballRadius;
 gameConfig.powerUpsExpand = 0.5;
 gameConfig.powerUpsShrink = -0.3;
 gameConfig.powerUpsPowerful = 1.3;
+gameConfig.powerUpsSnow = 200 / 1000;
 
 var phaserConfig = {
   width: gameConfig.width,
@@ -64,5 +65,6 @@ PowerUps.types = {
   EXPAND: "expand",
   SHRINK: "shrink",
   POWERFUL: "powerful",
-  WALL: "wall"
+  WALL: "wall",
+  SNOW: "snow"
 }

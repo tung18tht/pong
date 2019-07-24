@@ -35,6 +35,21 @@ class Paddle extends Phaser.Physics.Arcade.Sprite {
     this.wallLeft = scene.physics.add.sprite(0, p1 ? gameConfig.height - gameConfig.paddleHeight : gameConfig.paddleHeight, "paddle").setOrigin(1, 0.5).setImmovable(true).setDisplaySize(gameConfig.centerX, this.body.halfHeight);
     this.wallRight = scene.physics.add.sprite(gameConfig.width, p1 ? gameConfig.height - gameConfig.paddleHeight : gameConfig.paddleHeight, "paddle").setOrigin(0, 0.5).setImmovable(true).setDisplaySize(gameConfig.centerX, this.body.halfHeight);
     this.wallSet = 0;
+
+    this.isSnowed = false;
+    this.snowSet = 0;
+    this.snowEffect = scene.objects.effects.snow.createEmitter({
+      on: false,
+      x: {min: -gameConfig.width, max: gameConfig.width * 2},
+      y: gameConfig.centerY,
+      frequency: 50,
+      lifespan: 4000,
+      speed: {min: 150, max: 200},
+      scale: 0.1,
+      angle: p1 ? 45 : -135,
+      alpha: 0.2,
+      rotate: {start: 0, end: 360}
+    });
   }
 
   notifyPowerUp(type) {
@@ -59,9 +74,9 @@ class Paddle extends Phaser.Physics.Arcade.Sprite {
     });
   }
 
-  move(targetX, delta) {
+  move(targetX, delta, stepPerMs = gameConfig.paddleStepPerMs) {
     var diff = this.x - targetX;
-    var step = gameConfig.paddleStepPerMs * delta;
+    var step = stepPerMs * delta;
 
     if (diff < -step) {
       this.x += step;
@@ -117,7 +132,7 @@ class Paddle extends Phaser.Physics.Arcade.Sprite {
     if (force) {
       this.powerfulSet = 0;
     } else {
-      --this.powerfulSet;
+      this.powerfulSet--;
     }
 
     if (this.powerfulSet == 0) {
@@ -140,7 +155,7 @@ class Paddle extends Phaser.Physics.Arcade.Sprite {
     if (force) {
       this.wallSet = 0;
     } else {
-      --this.wallSet;
+      this.wallSet--;
     }
 
     if (this.wallSet == 0) {
@@ -156,6 +171,25 @@ class Paddle extends Phaser.Physics.Arcade.Sprite {
         x: gameConfig.width,
         duration: 2000
       });
+    }
+  }
+
+  beginSnowed() {
+    this.isSnowed = true;
+    this.snowSet++;
+    this.snowEffect.start();
+  }
+
+  endSnowed(force = false) {
+    if (force) {
+      this.snowSet = 0;
+    } else {
+      this.snowSet--;
+    }
+
+    if (this.snowSet == 0) {
+      this.isSnowed = false;
+      this.snowEffect.stop();
     }
   }
 }
@@ -204,6 +238,7 @@ class Paddles {
 
     this.resetPowerful();
     this.resetWalled();
+    this.resetSnowed();
   }
 
   resetPowerful() {
@@ -214,5 +249,10 @@ class Paddles {
   resetWalled() {
     this.p1.endWalled(true);
     this.p2.endWalled(true);
+  }
+
+  resetSnowed() {
+    this.p1.endSnowed(true);
+    this.p2.endSnowed(true);
   }
 }

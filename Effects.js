@@ -1,6 +1,7 @@
 class Effects {
   constructor(scene) {
     this.particles = scene.add.particles('ball');
+    this.snow = scene.add.particles(PowerUps.types.SNOW + 'nobound');
 
     this.ballLeftCollision = this.createEmitter({
       frequency: -1,

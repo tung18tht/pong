@@ -137,9 +137,19 @@ class GameScene extends Phaser.Scene {
 
     var [posYVelocityBall, negYVelocityBall] = this.objects.balls.getMostDeadlyBalls();
 
-    this.objects.paddles.p1.move(this.input.x, delta);
-    // this.objects.paddles.p1.move(posYVelocityBall.x, delta);
-    this.objects.paddles.p2.move(negYVelocityBall.x, delta);
+    if (this.objects.paddles.p1.isSnowed) {
+      this.objects.paddles.p1.move(this.input.x, delta, gameConfig.powerUpsSnow);
+      // this.objects.paddles.p1.move(posYVelocityBall.x, delta, gameConfig.powerUpsSnow);
+    } else {
+      this.objects.paddles.p1.move(this.input.x, delta);
+      // this.objects.paddles.p1.move(posYVelocityBall.x, delta);
+    }
+
+    if (this.objects.paddles.p2.isSnowed) {
+      this.objects.paddles.p2.move(negYVelocityBall.x, delta, gameConfig.powerUpsSnow);
+    } else {
+      this.objects.paddles.p2.move(negYVelocityBall.x, delta);
+    }
   }
 
   startNewRound(toSideP1) {
@@ -302,6 +312,7 @@ class GameScene extends Phaser.Scene {
         this.objects.balls.clear();
         this.objects.paddles.resetPowerful();
         this.objects.paddles.resetWalled();
+        this.objects.paddles.resetSnowed();
         this.objects.powerUps.clear();
       }
     });
@@ -518,6 +529,18 @@ class GameScene extends Phaser.Scene {
         this.time.addEvent({
           delay: gameConfig.powerUpsDuration, callback: () => {
             targetPaddle.endWalled();
+          }
+        });
+        break;
+
+      case PowerUps.types.SNOW:
+        var targetPaddle = ball.fromPaddle;
+        targetPaddle.notifyPowerUp(powerUp.type);
+
+        targetPaddle.beginSnowed();
+        this.time.addEvent({
+          delay: gameConfig.powerUpsDuration, callback: () => {
+            targetPaddle.endSnowed();
           }
         });
         break;
