@@ -162,7 +162,7 @@ class Balls {
       }
     }
 
-    var [newBallVelocityX, newBallVelocityY] = this.scene.getVelocityXY(Math.abs(newBallAngle), newVelocity, newBallAngle > 0);
+    var [newBallVelocityX, newBallVelocityY] = this.scene.getVelocityXY(Math.abs(newBallAngle), gameConfig.ballInitialVelocity, newBallAngle > 0);
     newBall.setVelocity(newBallVelocityX, newBallVelocityY);
   }
 }
