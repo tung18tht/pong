@@ -388,6 +388,9 @@ class GameScene extends Phaser.Scene {
   }
 
   ballBallCollide(ball1, ball2) {
+    this.objects.effects.explodeBallCollisionEffect(ball1, ball2);
+    this.objects.effects.explodeBallCollisionEffect(ball2, ball1);
+
     ball1.body.update(0);
     ball2.body.update(0);
 
