@@ -13,8 +13,6 @@ gameConfig.paddleYOffset = gameConfig.paddleHeight * 3;
 gameConfig.paddleStepPerMs = 1000 / 1000;
 gameConfig.paddleMaxBounceAngleAdjust = 20;
 gameConfig.paddleMinScaleX = 0.3;
-gameConfig.paddleExpand = 0.5;
-gameConfig.paddleShrink = -0.3;
 
 gameConfig.ballRadius = 15;
 gameConfig.ballBounce = 1.02;
@@ -26,6 +24,9 @@ gameConfig.ballAngleLimit = 20;
 gameConfig.powerUpsInterval = 4000;
 gameConfig.powerUpsDuration = 5000;
 gameConfig.powerUpsRadius = gameConfig.ballRadius;
+gameConfig.powerUpsExpand = 0.5;
+gameConfig.powerUpsShrink = -0.3;
+gameConfig.powerUpsPowerful = 1.3;
 
 var phaserConfig = {
   width: gameConfig.width,

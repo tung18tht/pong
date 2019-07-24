@@ -435,7 +435,7 @@ class GameScene extends Phaser.Scene {
 
     var newVelocity = ball.body.speed * gameConfig.ballBounce;
     if (paddle.isPowerful) {
-      newVelocity *= 1.5;
+      newVelocity *= gameConfig.powerUpsPowerful;
     }
     if (newVelocity > gameConfig.ballMaxVelocity) {
       newVelocity = gameConfig.ballMaxVelocity;
@@ -471,10 +471,10 @@ class GameScene extends Phaser.Scene {
         var targetPaddle = ball.fromPaddle;
         targetPaddle.notifyPowerUp(powerUp.type);
 
-        targetPaddle.updateScaleX(gameConfig.paddleExpand);
+        targetPaddle.updateScaleX(gameConfig.powerUpsExpand);
         this.time.addEvent({
           delay: gameConfig.powerUpsDuration, callback: () => {
-            targetPaddle.updateScaleX(-gameConfig.paddleExpand);
+            targetPaddle.updateScaleX(-gameConfig.powerUpsExpand);
           }
         });
         break;
@@ -483,10 +483,10 @@ class GameScene extends Phaser.Scene {
         var targetPaddle = ball.fromPaddle;
         targetPaddle.notifyPowerUp(powerUp.type);
 
-        targetPaddle.updateScaleX(gameConfig.paddleShrink);
+        targetPaddle.updateScaleX(gameConfig.powerUpsShrink);
         this.time.addEvent({
           delay: gameConfig.powerUpsDuration, callback: () => {
-            targetPaddle.updateScaleX(-gameConfig.paddleShrink);
+            targetPaddle.updateScaleX(-gameConfig.powerUpsShrink);
           }
         });
         break;
