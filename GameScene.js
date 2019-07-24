@@ -274,6 +274,7 @@ class GameScene extends Phaser.Scene {
       delay: 500,
       onComplete: () => {
         this.objects.balls.deleteExtraBalls();
+        this.objects.paddles.resetPowerful();
         this.objects.powerUps.clear();
         this.events.emit("roundEnded");
       }
@@ -305,6 +306,7 @@ class GameScene extends Phaser.Scene {
       delay: 500,
       onComplete: () => {
         this.objects.balls.clear();
+        this.objects.paddles.resetPowerful();
         this.objects.powerUps.clear();
       }
     });
@@ -440,6 +442,9 @@ class GameScene extends Phaser.Scene {
     }
 
     var newVelocity = ball.body.speed * gameConfig.ballBounce;
+    if (paddle.isPowerful) {
+      newVelocity *= 1.5;
+    }
     if (newVelocity > gameConfig.ballMaxVelocity) {
       newVelocity = gameConfig.ballMaxVelocity;
     }
@@ -465,8 +470,6 @@ class GameScene extends Phaser.Scene {
   }
 
   ballPowerUpOverlap(ball, powerUp) {
-    this.objects.effects.powerUpHit.emitParticleAt(powerUp.x, powerUp.y);
-
     switch (powerUp.type) {
       case PowerUps.types.X2:
         this.objects.balls.double(ball);
@@ -495,8 +498,21 @@ class GameScene extends Phaser.Scene {
           }
         });
         break;
+
+      case PowerUps.types.POWERFUL:
+        var targetPaddle = ball.fromPaddle;
+        targetPaddle.notifyPowerUp(powerUp.type);
+
+        targetPaddle.beginPowerful();
+        this.time.addEvent({
+          delay: gameConfig.powerUpsDuration, callback: () => {
+            targetPaddle.endPowerful();
+          }
+        });
+        break;
     }
 
+    this.objects.effects.powerUpHit.emitParticleAt(powerUp.x, powerUp.y);
     this.objects.powerUps.remove(powerUp);
   }
 

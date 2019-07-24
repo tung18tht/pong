@@ -60,5 +60,6 @@ PowerUps.constants = {
 PowerUps.types = {
   X2: "x2",
   EXPAND: "expand",
-  SHRINK: "shrink"
+  SHRINK: "shrink",
+  POWERFUL: "powerful"
 }

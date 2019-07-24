@@ -9,9 +9,6 @@ class Paddle extends Phaser.Physics.Arcade.Sprite {
 
     this.setOrigin(0.5, 0.5).setImmovable(true);
 
-    this.trueScaleX = 1;
-    this.scaleXDebt = 0;
-
     this.trail = scene.objects.effects.createEmitter({
       follow: this,
       lifespan: {min: 400, max: 600},
@@ -19,7 +16,7 @@ class Paddle extends Phaser.Physics.Arcade.Sprite {
       scale: 0.3,
       angle: p1 ? {min: 30, max: 150} : {min: 210, max: 330},
       alpha: {start: 0.5, end: 0},
-      emitZone: { source: new Phaser.Geom.Line(-Paddles.constants.defaultHalfTrailWidth, 0, Paddles.constants.defaultHalfTrailWidth, 0)}
+      emitZone: {source: new Phaser.Geom.Line(-Paddles.constants.defaultHalfTrailWidth, 0, Paddles.constants.defaultHalfTrailWidth, 0)}
     });
 
     this.ballCollisionEffect = scene.objects.effects.createEmitter({
@@ -37,6 +34,13 @@ class Paddle extends Phaser.Physics.Arcade.Sprite {
       this.powerUpsNoti[powerUp] = scene.add.image(gameConfig.centerX, gameConfig.centerY * (p1 ? 1.5 : 0.5), powerUp + 'nobound').setOrigin(0.5, 0.5).setDisplaySize(250, 250).setAlpha(0);
     });
     this.powerUpsNotiValues = Object.values(this.powerUpsNoti);
+
+    this.trueScaleX = 1;
+    this.scaleXDebt = 0;
+
+    this.isPowerful = false;
+    this.powerfulSet = 0;
+    this.powerfulIcon = scene.add.image(this.x, this.y, PowerUps.types.POWERFUL + 'nobound').setOrigin(0.5, 0.5).setDisplaySize(gameConfig.paddleHeight, gameConfig.paddleHeight).setTint(0x000000).setAlpha(0);
   }
 
   notifyPowerUp(type) {
@@ -81,6 +85,10 @@ class Paddle extends Phaser.Physics.Arcade.Sprite {
         this.x = maxX;
       }
     }
+
+    if (this.isPowerful) {
+      this.powerfulIcon.x = this.x;
+    }
   }
 
   updateScaleX(value) {
@@ -100,9 +108,26 @@ class Paddle extends Phaser.Physics.Arcade.Sprite {
       duration: 500,
       onComplete: () => {
         var halfTrailWidth = this.body.halfWidth * 0.8;
-        this.trail.setEmitZone({ source: new Phaser.Geom.Line(-halfTrailWidth, 0, halfTrailWidth, 0)});
+        this.trail.setEmitZone({source: new Phaser.Geom.Line(-halfTrailWidth, 0, halfTrailWidth, 0)});
       }
     });
+  }
+
+  beginPowerful() {
+    this.isPowerful = true;
+    this.powerfulSet++;
+    this.powerfulIcon.setAlpha(1);
+  }
+
+  endPowerful(force = false) {
+    if (force) {
+      this.powerfulSet == 0;
+      this.isPowerful = false;
+      this.powerfulIcon.setAlpha(0);
+    } else if (--this.powerfulSet == 0) {
+      this.isPowerful = false;
+      this.powerfulIcon.setAlpha(0);
+    }
   }
 }
 
@@ -128,8 +153,18 @@ class Paddles {
     this.p1.setScale(1, 0);
     this.p2.setScale(1, 0);
 
+    this.p1.trueScaleX = 1;
+    this.p1.scaleXDebt = 0;
+    this.p2.trueScaleX = 1;
+    this.p2.scaleXDebt = 0;
+
     this.p1.trail.setEmitZone({source: new Phaser.Geom.Line(-Paddles.constants.defaultHalfTrailWidth, 0, Paddles.constants.defaultHalfTrailWidth, 0)});
     this.p2.trail.setEmitZone({source: new Phaser.Geom.Line(-Paddles.constants.defaultHalfTrailWidth, 0, Paddles.constants.defaultHalfTrailWidth, 0)});
+  }
+
+  resetPowerful() {
+    this.p1.endPowerful(true);
+    this.p2.endPowerful(true);
   }
 
   startTrails() {
