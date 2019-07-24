@@ -43,10 +43,10 @@ class Paddle extends Phaser.Physics.Arcade.Sprite {
       x: {min: -gameConfig.width, max: gameConfig.width * 2},
       y: gameConfig.centerY,
       frequency: 50,
-      lifespan: 4000,
+      lifespan: 3000,
       speed: {min: 150, max: 200},
       scale: 0.1,
-      angle: p1 ? 45 : -135,
+      angle: p1 ? 60 : -120,
       alpha: 0.2,
       rotate: {start: 0, end: 360}
     });
