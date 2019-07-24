@@ -49,6 +49,8 @@ class GameScene extends Phaser.Scene {
     this.physics.add.overlap(this.objects.balls.phaserGroup, this.objects.paddles.phaserGroup, (ball, paddle) => {this.ballPaddleOverlap(ball, paddle)});
     this.physics.add.overlap(this.objects.balls.phaserGroup, this.objects.powerUps.phaserGroup, (ball, powerUp) => {this.ballPowerUpOverlap(ball, powerUp)});
 
+    this.physics.add.collider(this.objects.balls.phaserGroup, this.objects.paddles.walls, (ball, wall) => {this.objects.effects.explodeBallCollisionEffect(ball, wall)});
+
     this.physics.world.on('worldbounds', (ball, up, down, left, right) => {this.ballWorldCollide(ball, up, down, left, right)});
 
     this.objects.countdownBackground = this.add.rectangle(0, 0, gameConfig.width, gameConfig.height, 0x000000, 0.7).setOrigin(0, 0);
@@ -66,8 +68,8 @@ class GameScene extends Phaser.Scene {
     });
 
     this.objects.pauseBackgound = this.add.rectangle(0, 0, gameConfig.width, gameConfig.height, 0x000000).setOrigin(0, 0).setAlpha(0);
-    this.objects.pauseTextP1 = this.add.text(gameConfig.centerX, gameConfig.centerY * 1.5, "paused", { fontSize: 40, color: '#FFFFFF' }).setOrigin(0.5, 0.5).setAlpha(0);
-    this.objects.pauseTextP2 = this.add.text(gameConfig.centerX, gameConfig.centerY * 0.5, "paused", { fontSize: 40, color: '#FFFFFF' }).setOrigin(0.5, 0.5).setFlip(true, true).setAlpha(0);
+    this.objects.pauseTextP1 = this.add.text(gameConfig.centerX, gameConfig.centerY * 1.5, "paused", {fontSize: 40, color: '#FFFFFF' }).setOrigin(0.5, 0.5).setAlpha(0);
+    this.objects.pauseTextP2 = this.add.text(gameConfig.centerX, gameConfig.centerY * 0.5, "paused", {fontSize: 40, color: '#FFFFFF' }).setOrigin(0.5, 0.5).setFlip(true, true).setAlpha(0);
     this.objects.continueButton = this.add.rectangle(gameConfig.centerX - 90, gameConfig.centerY, 120, 120).setOrigin(0.5, 0.5).setStrokeStyle(8, 0xFFFFFF).setAlpha(0);
     this.objects.continueIcon = this.add.image(gameConfig.centerX - 90, gameConfig.centerY, 'play').setOrigin(0.5, 0.5).setDisplaySize(80, 80).setAlpha(0);
     this.objects.quitButton = this.add.rectangle(gameConfig.centerX + 90, gameConfig.centerY, 120, 120).setOrigin(0.5, 0.5).setStrokeStyle(8, 0xFFFFFF).setAlpha(0);
@@ -77,8 +79,8 @@ class GameScene extends Phaser.Scene {
     this.objects.continueButton.on('pointerout', () => {this.objects.continueButton.setScale(1)});
     this.objects.continueButton.on('pointerup', () => {this.continue()});
 
-    this.objects.quitButton.on('pointerover', () => { this.objects.quitButton.setScale(1.1) });
-    this.objects.quitButton.on('pointerout', () => { this.objects.quitButton.setScale(1) });
+    this.objects.quitButton.on('pointerover', () => {this.objects.quitButton.setScale(1.1) });
+    this.objects.quitButton.on('pointerout', () => {this.objects.quitButton.setScale(1) });
     this.objects.quitButton.on('pointerup', () => {this.quit()});
 
     this.startNewRound(Math.random() < 0.5);
@@ -143,16 +145,8 @@ class GameScene extends Phaser.Scene {
   startNewRound(toSideP1) {
     this.physics.pause();
 
-    this.objects.balls.mainBall.setAlpha(0);
-    this.objects.paddles.setAlpha(0);
-
-    this.objects.balls.mainBall.setPosition(gameConfig.centerX, gameConfig.centerY);
-    this.objects.paddles.setupNewRoundPosition();
-
-    this.objects.balls.mainBall.trail.stop();
-    this.objects.paddles.stopTrails();
-
-    this.objects.paddles.setupNewRoundScale();
+    this.objects.balls.setupForNewRound();
+    this.objects.paddles.setupForNewRound();
 
     this.variables.countdownNumber = 3;
     this.objects.countdownP1.setText(this.variables.countdownNumber);
@@ -274,7 +268,6 @@ class GameScene extends Phaser.Scene {
       delay: 500,
       onComplete: () => {
         this.objects.balls.deleteExtraBalls();
-        this.objects.paddles.resetPowerful();
         this.objects.powerUps.clear();
         this.events.emit("roundEnded");
       }
@@ -307,6 +300,7 @@ class GameScene extends Phaser.Scene {
       onComplete: () => {
         this.objects.balls.clear();
         this.objects.paddles.resetPowerful();
+        this.objects.paddles.resetWalled();
         this.objects.powerUps.clear();
       }
     });
@@ -403,16 +397,11 @@ class GameScene extends Phaser.Scene {
 
   ballPaddleCollide(ball, paddle) {
     ball.fromPaddle = paddle;
+    this.objects.effects.explodeBallCollisionEffect(ball, paddle);
 
-    if (ball.body.touching.left) {
-      this.objects.effects.ballLeftCollision.emitParticleAt(paddle.body.right, ball.y);
-      return;
-    } else if (ball.body.touching.right) {
-      this.objects.effects.ballRightCollision.emitParticleAt(paddle.body.left, ball.y);
+    if (ball.body.touching.left || ball.body.touching.right) {
       return;
     }
-
-    paddle.ballCollisionEffect.emitParticleAt(ball.x, paddle.y);
 
     var diffRatio = (ball.x - paddle.x) / paddle.body.halfWidth;
     var angleAdjust = diffRatio * gameConfig.paddleMaxBounceAngleAdjust;
@@ -507,6 +496,18 @@ class GameScene extends Phaser.Scene {
         this.time.addEvent({
           delay: gameConfig.powerUpsDuration, callback: () => {
             targetPaddle.endPowerful();
+          }
+        });
+        break;
+
+      case PowerUps.types.WALL:
+        var targetPaddle = ball.fromPaddle;
+        targetPaddle.notifyPowerUp(powerUp.type);
+
+        targetPaddle.beginWalled();
+        this.time.addEvent({
+          delay: gameConfig.powerUpsDuration, callback: () => {
+            targetPaddle.endWalled();
           }
         });
         break;

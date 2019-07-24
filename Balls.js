@@ -81,6 +81,12 @@ class Balls {
     this.phaserGroup.clear(true, true);
   }
 
+  setupForNewRound() {
+    this.mainBall.setAlpha(0);
+    this.mainBall.setPosition(gameConfig.centerX, gameConfig.centerY);
+    this.mainBall.trail.stop();
+  }
+
   getMostDeadlyBalls() {
     var posYVelocityBall, maxY = Number.MIN_SAFE_INTEGER, negYVelocityBall, minY = Number.MAX_SAFE_INTEGER;
 

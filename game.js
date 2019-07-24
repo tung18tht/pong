@@ -61,5 +61,6 @@ PowerUps.types = {
   X2: "x2",
   EXPAND: "expand",
   SHRINK: "shrink",
-  POWERFUL: "powerful"
+  POWERFUL: "powerful",
+  WALL: "wall"
 }

@@ -22,6 +22,26 @@ class Effects {
       alpha: {start: 0.5, end: 0}
     });
 
+    this.ballDownCollision = this.createEmitter({
+      frequency: -1,
+      quantity: 10,
+      lifespan: {min: 200, max: 300},
+      speed: {min: 200, max: 300},
+      scale: 0.2,
+      angle: {min: -160, max: -20},
+      alpha: {start: 0.5, end: 0}
+    });
+
+    this.ballUpCollision = this.createEmitter({
+      frequency: -1,
+      quantity: 10,
+      lifespan: {min: 200, max: 300},
+      speed: {min: 200, max: 300},
+      scale: 0.2,
+      angle: {min: 20, max: 160},
+      alpha: {start: 0.5, end: 0}
+    });
+
     this.powerUpHit = this.createEmitter({
       frequency: -1,
       quantity: 1000,
@@ -58,5 +78,17 @@ class Effects {
 
   removeEmitter(emitter) {
     this.particles.emitters.remove(emitter);
+  }
+
+  explodeBallCollisionEffect(ball, object) {
+    if (ball.body.touching.up) {
+      this.ballUpCollision.emitParticleAt(ball.x, object.body.bottom);
+    } else if (ball.body.touching.down) {
+      this.ballDownCollision.emitParticleAt(ball.x, object.body.top);
+    } else if (ball.body.touching.left) {
+      this.ballLeftCollision.emitParticleAt(object.body.right, ball.y);
+    } else {
+      this.ballRightCollision.emitParticleAt(object.body.left, ball.y);
+    }
   }
 }

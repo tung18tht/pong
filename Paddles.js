@@ -19,16 +19,6 @@ class Paddle extends Phaser.Physics.Arcade.Sprite {
       emitZone: {source: new Phaser.Geom.Line(-Paddles.constants.defaultHalfTrailWidth, 0, Paddles.constants.defaultHalfTrailWidth, 0)}
     });
 
-    this.ballCollisionEffect = scene.objects.effects.createEmitter({
-      frequency: -1,
-      quantity: 10,
-      lifespan: {min: 200, max: 300},
-      speed: {min: 200, max: 300},
-      scale: 0.2,
-      angle: p1 ? {min: -160, max: -20} : {min: 20, max: 160},
-      alpha: {start: 0.5, end: 0}
-    });
-
     this.powerUpsNoti = {};
     Object.values(PowerUps.types).forEach(powerUp => {
       this.powerUpsNoti[powerUp] = scene.add.image(gameConfig.centerX, gameConfig.centerY * (p1 ? 1.5 : 0.5), powerUp + 'nobound').setOrigin(0.5, 0.5).setDisplaySize(250, 250).setAlpha(0);
@@ -41,6 +31,10 @@ class Paddle extends Phaser.Physics.Arcade.Sprite {
     this.isPowerful = false;
     this.powerfulSet = 0;
     this.powerfulIcon = scene.add.image(this.x, this.y, PowerUps.types.POWERFUL + 'nobound').setOrigin(0.5, 0.5).setDisplaySize(gameConfig.paddleHeight, gameConfig.paddleHeight).setTint(0x000000).setAlpha(0);
+
+    this.wallLeft = scene.physics.add.sprite(0, p1 ? gameConfig.height - gameConfig.paddleHeight : gameConfig.paddleHeight, "paddle").setOrigin(1, 0.5).setImmovable(true).setDisplaySize(gameConfig.centerX, this.body.halfHeight);
+    this.wallRight = scene.physics.add.sprite(gameConfig.width, p1 ? gameConfig.height - gameConfig.paddleHeight : gameConfig.paddleHeight, "paddle").setOrigin(0, 0.5).setImmovable(true).setDisplaySize(gameConfig.centerX, this.body.halfHeight);
+    this.wallSet = 0;
   }
 
   notifyPowerUp(type) {
@@ -121,12 +115,47 @@ class Paddle extends Phaser.Physics.Arcade.Sprite {
 
   endPowerful(force = false) {
     if (force) {
-      this.powerfulSet == 0;
+      this.powerfulSet = 0;
+    } else {
+      --this.powerfulSet;
+    }
+
+    if (this.powerfulSet == 0) {
       this.isPowerful = false;
       this.powerfulIcon.setAlpha(0);
-    } else if (--this.powerfulSet == 0) {
-      this.isPowerful = false;
-      this.powerfulIcon.setAlpha(0);
+    }
+  }
+
+  beginWalled() {
+    this.wallSet++;
+    this.scene.tweens.killTweensOf([this.wallLeft, this.wallRight]);
+    this.scene.tweens.add({
+      targets: [this.wallLeft, this.wallRight],
+      x: gameConfig.centerX,
+      duration: 2000
+    });
+  }
+
+  endWalled(force = false) {
+    if (force) {
+      this.wallSet = 0;
+    } else {
+      --this.wallSet;
+    }
+
+    if (this.wallSet == 0) {
+      this.scene.tweens.killTweensOf([this.wallLeft, this.wallRight]);
+
+      this.scene.tweens.add({
+        targets: this.wallLeft,
+        x: 0,
+        duration: 2000
+      });
+      this.scene.tweens.add({
+        targets: this.wallRight,
+        x: gameConfig.width,
+        duration: 2000
+      });
     }
   }
 }
@@ -137,16 +166,17 @@ class Paddles {
     this.p2 = new Paddle(scene, false);
 
     this.phaserGroup = scene.physics.add.group([this.p1, this.p2]);
+    this.walls = scene.physics.add.group([this.p1.wallLeft, this.p1.wallRight, this.p2.wallLeft, this.p2.wallRight]);
   }
 
-  setAlpha(value) {
-    this.p1.setAlpha(value);
-    this.p2.setAlpha(value);
+  startTrails() {
+    this.p1.trail.start();
+    this.p2.trail.start();
   }
 
-  setupNewRoundPosition() {
-    this.p1.setPosition(gameConfig.centerX, gameConfig.height);
-    this.p2.setPosition(gameConfig.centerX, 0);
+  stopTrails() {
+    this.p1.trail.stop();
+    this.p2.trail.stop();
   }
 
   setupNewRoundScale() {
@@ -162,18 +192,27 @@ class Paddles {
     this.p2.trail.setEmitZone({source: new Phaser.Geom.Line(-Paddles.constants.defaultHalfTrailWidth, 0, Paddles.constants.defaultHalfTrailWidth, 0)});
   }
 
+  setupForNewRound() {
+    this.p1.setAlpha(0);
+    this.p2.setAlpha(0);
+
+    this.p1.setPosition(gameConfig.centerX, gameConfig.height);
+    this.p2.setPosition(gameConfig.centerX, 0);
+
+    this.stopTrails();
+    this.setupNewRoundScale();
+
+    this.resetPowerful();
+    this.resetWalled();
+  }
+
   resetPowerful() {
     this.p1.endPowerful(true);
     this.p2.endPowerful(true);
   }
 
-  startTrails() {
-    this.p1.trail.start();
-    this.p2.trail.start();
-  }
-
-  stopTrails() {
-    this.p1.trail.stop();
-    this.p2.trail.stop();
+  resetWalled() {
+    this.p1.endWalled(true);
+    this.p2.endWalled(true);
   }
 }
