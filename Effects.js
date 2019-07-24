@@ -51,9 +51,8 @@ class Effects {
       alpha: {start: 0.2, end: 0}
     });
 
-    this.ballScored = this.createEmitter({
+    this.ballExplosion = this.createEmitter({
       frequency: -1,
-      quantity: 1000,
       lifespan: {min: 450, max: 550},
       speed: {min: 450, max: 550},
       scale: 0.5,

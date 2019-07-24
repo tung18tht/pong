@@ -54,17 +54,36 @@ class PowerUps {
 
     this.phaserGroup = scene.physics.add.group();
     this.children = this.phaserGroup.getChildren();
+
+    this.explodeAvailable = 0;
   }
 
   startSpawning() {
     this.scene.time.addEvent({
       delay: gameConfig.powerUpsInterval, loop: true, callback: () => {
-        this.phaserGroup.add(new PowerUp(
-          this.scene,
-          50 + Math.random() * (gameConfig.width - 100),
-          100 + Math.random() * (gameConfig.height - 200),
-          this.powerUpsValues[Math.floor(Math.random() * this.powerUpsValues.length)]
-        ));
+        var powerUp;
+        while (true) {
+          powerUp = this.powerUpsValues[Math.floor(Math.random() * this.powerUpsValues.length)];
+          var flag = false;
+          switch (powerUp) {
+            case PowerUps.types.EXPLODE:
+              if (this.explodeAvailable > 0) {
+                this.explodeAvailable--;
+                flag = true;
+              }
+              break;
+
+            default:
+              flag = true;
+              break;
+          }
+
+          if (flag) {
+            break;
+          }
+        }
+
+        this.phaserGroup.add(new PowerUp(this.scene, 50 + Math.random() * (gameConfig.width - 100), 100 + Math.random() * (gameConfig.height - 200), powerUp));
       }
     });
   }
@@ -81,5 +100,9 @@ class PowerUps {
 
   clear() {
     this.phaserGroup.clear(true, true);
+  }
+
+  setupForNewRound() {
+    this.explodeAvailable = 0;
   }
 }

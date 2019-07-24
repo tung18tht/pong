@@ -77,6 +77,10 @@ class Balls {
     this.mainBall = this.children[0];
   }
 
+  remove(ball) {
+    this.phaserGroup.remove(ball, true, true);
+  }
+
   clear() {
     this.phaserGroup.clear(true, true);
   }

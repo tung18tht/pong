@@ -147,6 +147,7 @@ class GameScene extends Phaser.Scene {
 
     this.objects.balls.setupForNewRound();
     this.objects.paddles.setupForNewRound();
+    this.objects.powerUps.setupForNewRound();
 
     this.variables.countdownNumber = 3;
     this.objects.countdownP1.setText(this.variables.countdownNumber);
@@ -376,7 +377,7 @@ class GameScene extends Phaser.Scene {
     }
 
     if (up || down) {
-      this.objects.effects.ballScored.emitParticleAt(ball.gameObject.x, ball.gameObject.y);
+      this.objects.effects.ballExplosion.explode(1000, ball.gameObject.x, ball.gameObject.y);
 
       if (lastPoint) {
         this.endMatch(up);
@@ -465,6 +466,12 @@ class GameScene extends Phaser.Scene {
     switch (powerUp.type) {
       case PowerUps.types.X2:
         this.objects.balls.double(ball);
+        this.objects.powerUps.explodeAvailable++;
+        break;
+
+      case PowerUps.types.EXPLODE:
+        this.objects.balls.remove(ball);
+        this.objects.effects.ballExplosion.explode(100, ball.x, ball.y);
         break;
 
       case PowerUps.types.EXPAND:
