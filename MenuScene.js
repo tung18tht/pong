@@ -19,8 +19,10 @@ class MenuScene extends Phaser.Scene {
     var firework = effects.createEmitter({
       frequency: -1,
       gravityY: 200,
+      bounds: {x: 0, y: 0, width: gameConfig.width, height: gameConfig.height},
+      bounce: 0.5,
       lifespan: {min: 2000, max: 3000},
-      speed: {min: 0, max: 250},
+      speed: {min: 0, max: 500},
       scale: 0.3,
       alpha: {start: 0.5, end: 0}
     });
@@ -61,7 +63,7 @@ class MenuScene extends Phaser.Scene {
       }
     });
 
-    this.add.rectangle(0, 0, gameConfig.width, gameConfig.height, 0x000000, 0.3).setOrigin(0, 0)
+    this.add.rectangle(0, 0, gameConfig.width, gameConfig.height, 0x000000, 0.5).setOrigin(0, 0)
 
     var title = this.add.text(gameConfig.centerX, 150, "PONG", {fontSize: 120, color: '#FFFFFF'}).setOrigin(0.5, 0.5).setAlpha(0);
     var copyright = this.add.text(gameConfig.centerX, gameConfig.height - 50, "© 2019 #tung18tht", {fontSize: 20, color: '#FFFFFF'}).setOrigin(0.5, 0.5).setAlpha(0);
