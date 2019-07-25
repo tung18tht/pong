@@ -10,13 +10,6 @@ class PowerUp extends Phaser.GameObjects.Image {
 
     this.setOrigin(0.5, 0.5).setDisplaySize(PowerUps.constants.powerUpsDiameter, PowerUps.constants.powerUpsDiameter);
 
-    this.tween = scene.tweens.add({
-      targets: this,
-      angle: 360,
-      repeat: -1,
-      duration: 3000
-    });
-
     this.effect = scene.objects.effects.createEmitter({
       x: x,
       y: y,
@@ -26,8 +19,8 @@ class PowerUp extends Phaser.GameObjects.Image {
       scale: 0.2,
       alpha: {start: 0.25, end: 0},
       emitCallback: (particle) => {
-        var newX = gameConfig.powerUpsRadius * Math.cos(Math.atan2(particle.velocityY, particle.velocityX));
-        var newY = Math.sqrt((PowerUps.constants.powerUpsRadiusSquared) - (newX ** 2));
+        var newX = this.body.halfWidth * Math.cos(Math.atan2(particle.velocityY, particle.velocityX));
+        var newY = Math.sqrt((this.body.halfWidth ** 2) - (newX ** 2));
         if (particle.velocityY < 0) {
           newY = -newY;
         }
@@ -35,12 +28,39 @@ class PowerUp extends Phaser.GameObjects.Image {
         particle.fire(newX, newY);
       }
     });
+
+    this.tween = scene.tweens.add({
+      targets: this,
+      angle: 360,
+      repeat: -1,
+      duration: 3000
+    });
+
+    if (type == PowerUps.types.POINT) {
+      this.scaleTween = scene.tweens.add({
+        targets: this,
+        displayWidth: PowerUps.constants.powerUpsDiameter * 1.5,
+        displayHeight: PowerUps.constants.powerUpsDiameter * 1.5,
+        yoyo: true,
+        repeat: -1,
+        duration: 1000
+      });
+
+      this.effect.setLifespan({min: 250, max: 500});
+      this.effect.setSpeed({min: 25, max: 50});
+      this.effect.setScale(0.25);
+      this.effect.setAlpha({start: 0.5, end: 0});
+    }
   }
 
   destroy(fromScene) {
     if (this.scene) {
       this.scene.objects.effects.removeEmitter(this.effect);
       this.tween.remove();
+
+      if (this.type == PowerUps.types.POINT) {
+        this.scaleTween.remove();
+      }
     }
 
     super.destroy(fromScene);
@@ -56,6 +76,7 @@ class PowerUps {
     this.children = this.phaserGroup.getChildren();
 
     this.explodeAvailable = 0;
+    this.pointAvailable = true;
   }
 
   startSpawning() {
@@ -69,6 +90,13 @@ class PowerUps {
             case PowerUps.types.EXPLODE:
               if (this.explodeAvailable > 0) {
                 this.explodeAvailable--;
+                flag = true;
+              }
+              break;
+
+            case PowerUps.types.POINT:
+              if (this.pointAvailable && Math.random() < 0.1) {
+                this.pointAvailable = false;
                 flag = true;
               }
               break;
@@ -104,5 +132,11 @@ class PowerUps {
 
   setupForNewRound() {
     this.explodeAvailable = 0;
+
+    if (this.scene.variables.p1Score < gameConfig.pointsToWin - 1 && this.scene.variables.p2Score < gameConfig.pointsToWin - 1) {
+      this.pointAvailable = true;
+    } else {
+      this.pointAvailable = false;
+    }
   }
 }

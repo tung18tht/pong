@@ -388,7 +388,7 @@ class GameScene extends Phaser.Scene {
     }
 
     if (up || down) {
-      this.objects.effects.ballExplosion.explode(1000, ball.gameObject.x, ball.gameObject.y);
+      this.objects.effects.explosion.explode(1000, ball.gameObject.x, ball.gameObject.y);
 
       if (lastPoint) {
         this.endMatch(up);
@@ -482,7 +482,7 @@ class GameScene extends Phaser.Scene {
 
       case PowerUps.types.EXPLODE:
         this.objects.balls.remove(ball);
-        this.objects.effects.ballExplosion.explode(100, ball.x, ball.y);
+        this.objects.effects.explosion.explode(100, ball.x, ball.y);
         break;
 
       case PowerUps.types.EXPAND:
@@ -543,6 +543,29 @@ class GameScene extends Phaser.Scene {
             targetPaddle.endSnowed();
           }
         });
+        break;
+
+      case PowerUps.types.POINT:
+        ball.fromPaddle.notifyPowerUp(powerUp.type);
+
+        if (ball.fromPaddle === this.objects.paddles.p1) {
+          this.objects.p1ScoreText.setText(++this.variables.p1Score);
+          this.objects.effects.explosion.explode(1000, this.objects.p1ScoreText.x, this.objects.p1ScoreText.y);
+        } else {
+          this.objects.p2ScoreText.setText(++this.variables.p2Score);
+          this.objects.effects.explosion.explode(1000, this.objects.p2ScoreText.x, this.objects.p2ScoreText.y);
+        }
+
+        this.tweens.killTweensOf([this.objects.p1ScoreText, this.objects.p2ScoreText]);
+        this.objects.p1ScoreText.setAlpha(1);
+        this.objects.p2ScoreText.setAlpha(1);
+        this.tweens.add({
+          targets: [this.objects.p1ScoreText, this.objects.p2ScoreText],
+          alpha: 0.3,
+          duration: 2000,
+          delay: 2000
+        });
+
         break;
     }
 

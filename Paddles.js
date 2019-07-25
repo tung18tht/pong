@@ -21,7 +21,7 @@ class Paddle extends Phaser.Physics.Arcade.Sprite {
 
     this.powerUpsNoti = {};
     Object.values(PowerUps.types).forEach(powerUp => {
-      this.powerUpsNoti[powerUp] = scene.add.image(gameConfig.centerX, gameConfig.centerY * (p1 ? 1.5 : 0.5), powerUp + 'nobound').setOrigin(0.5, 0.5).setDisplaySize(250, 250).setAlpha(0);
+      this.powerUpsNoti[powerUp] = scene.add.image(gameConfig.centerX, gameConfig.centerY * (p1 ? 1.5 : 0.5), powerUp + 'nobound').setOrigin(0.5, 0.5).setDisplaySize(250, 250).setFlip(!p1, !p1).setAlpha(0);
     });
     this.powerUpsNotiValues = Object.values(this.powerUpsNoti);
 

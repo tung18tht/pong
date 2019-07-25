@@ -55,8 +55,7 @@ Balls.constants = {
 }
 
 PowerUps.constants = {
-  powerUpsDiameter: gameConfig.powerUpsRadius * 2,
-  powerUpsRadiusSquared: gameConfig.powerUpsRadius ** 2
+  powerUpsDiameter: gameConfig.powerUpsRadius * 2
 }
 
 PowerUps.types = {
@@ -66,5 +65,6 @@ PowerUps.types = {
   SHRINK: "shrink",
   POWERFUL: "powerful",
   WALL: "wall",
-  SNOW: "snow"
+  SNOW: "snow",
+  POINT: "point"
 }
