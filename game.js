@@ -23,6 +23,7 @@ gameConfig.ballAngleLimit = 20;
 
 gameConfig.powerUpsInterval = 4000;
 gameConfig.powerUpsDuration = 5000;
+gameConfig.powerUpsLifespan = 10000;
 gameConfig.powerUpsRadius = gameConfig.ballRadius;
 gameConfig.powerUpsExpand = 0.5;
 gameConfig.powerUpsShrink = -0.3;

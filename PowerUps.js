@@ -51,12 +51,19 @@ class PowerUp extends Phaser.GameObjects.Image {
       this.effect.setScale(0.25);
       this.effect.setAlpha({start: 0.5, end: 0});
     }
+
+    this.selfDestroyEvent = scene.time.addEvent({
+      delay: gameConfig.powerUpsLifespan, callback: () => {
+        this.destroy();
+      }
+    });
   }
 
   destroy(fromScene) {
     if (this.scene) {
       this.scene.objects.effects.removeEmitter(this.effect);
       this.tween.remove();
+      this.selfDestroyEvent.remove();
 
       if (this.type == PowerUps.types.POINT) {
         this.scaleTween.remove();
