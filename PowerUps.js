@@ -127,7 +127,7 @@ class PowerUps {
           }
         }
 
-        this.phaserGroup.add(new PowerUp(this.scene, 50 + Math.random() * (gameConfig.width - 100), 100 + Math.random() * (gameConfig.height - 200), powerUp));
+        this.phaserGroup.add(new PowerUp(this.scene, 50 + Math.random() * (gameConfig.width - 100), 200 + Math.random() * (gameConfig.height - 400), powerUp));
       }
     });
   }
