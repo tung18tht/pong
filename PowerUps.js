@@ -54,6 +54,15 @@ class PowerUp extends Phaser.GameObjects.Image {
 
     this.selfDestroyEvent = scene.time.addEvent({
       delay: gameConfig.powerUpsLifespan, callback: () => {
+        switch (type) {
+          case PowerUps.types.EXPLODE:
+            scene.objects.powerUps.explodeAvailable++;
+            break;
+          case powerUps.types.POINT:
+            scene.objects.powerUps.pointAvailable = true;
+            break;
+        }
+
         this.destroy();
       }
     });
