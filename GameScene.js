@@ -352,6 +352,38 @@ class GameScene extends Phaser.Scene {
       onComplete: () => {this.objects.endMatchButton.setInteractive({useHandCursor: true})}
     });
 
+    (p1Win ? this.objects.p2Result : this.objects.p1Result).setScale(0.75, 0.75);
+    (p1Win ? this.objects.p1Result : this.objects.p2Result).setAngle(20);
+
+    this.tweens.add({
+      targets: p1Win ? this.objects.p1Result : this.objects.p2Result,
+      scaleX: 1.5,
+      scaleY: 1.5,
+      yoyo: true,
+      repeat: -1,
+      duration: 700,
+      delay: 1000
+    });
+
+    this.tweens.add({
+      targets: p1Win ? this.objects.p1Result : this.objects.p2Result,
+      angle: -20,
+      yoyo: true,
+      repeat: -1,
+      duration: 420,
+      delay: 1000
+    });
+
+    this.tweens.add({
+      targets: p1Win ? this.objects.p2Result : this.objects.p1Result,
+      scaleX: 0.5,
+      scaleY: 0.5,
+      yoyo: true,
+      repeat: -1,
+      duration: 1000,
+      delay: 1000
+    });
+
     this.tweens.add({
       targets: p1Win ? this.objects.paddles.p1 : this.objects.paddles.p2,
       x: gameConfig.centerX,
