@@ -58,7 +58,7 @@ class PowerUp extends Phaser.GameObjects.Image {
           case PowerUps.types.EXPLODE:
             scene.objects.powerUps.explodeAvailable++;
             break;
-          case powerUps.types.POINT:
+          case PowerUps.types.POINT:
             scene.objects.powerUps.pointAvailable = true;
             break;
         }
