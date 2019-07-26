@@ -53,12 +53,12 @@ class GameScene extends Phaser.Scene {
 
     this.physics.world.on('worldbounds', (ball, up, down, left, right) => {this.ballWorldCollide(ball, up, down, left, right)});
 
-    this.objects.countdownBackground = this.add.rectangle(0, 0, gameConfig.width, gameConfig.height, 0x000000, 0.7).setOrigin(0, 0);
-    this.objects.countdownP1 = this.add.text(gameConfig.centerX, gameConfig.centerY * 1.5, this.variables.countdownNumber, {fontSize: 120, color: '#FFFFFF'}).setOrigin(0.5, 0.5);
-    this.objects.countdownP2 = this.add.text(gameConfig.centerX, gameConfig.centerY * 0.5, this.variables.countdownNumber, {fontSize: 120, color: '#FFFFFF'}).setOrigin(0.5, 0.5).setFlip(true, true);
+    this.objects.countdownBackground = this.add.rectangle(0, 0, gameConfig.width, gameConfig.height, 0x000000, 0.7).setOrigin(0, 0).setDepth(gameConfig.overlayDepth);
+    this.objects.countdownP1 = this.add.text(gameConfig.centerX, gameConfig.centerY * 1.5, this.variables.countdownNumber, {fontSize: 120, color: '#FFFFFF'}).setOrigin(0.5, 0.5).setDepth(gameConfig.overlayDepth);
+    this.objects.countdownP2 = this.add.text(gameConfig.centerX, gameConfig.centerY * 0.5, this.variables.countdownNumber, {fontSize: 120, color: '#FFFFFF'}).setOrigin(0.5, 0.5).setFlip(true, true).setDepth(gameConfig.overlayDepth);
 
-    this.objects.pauseButton = this.add.rectangle(gameConfig.width - 50, gameConfig.centerY, 50, 50).setOrigin(0.5, 0.5).setStrokeStyle(2, 0xFFFFFF);
-    this.objects.pauseIcon = this.add.image(gameConfig.width - 50, gameConfig.centerY, 'pause').setOrigin(0.5, 0.5).setDisplaySize(40, 40);
+    this.objects.pauseButton = this.add.rectangle(gameConfig.width - 50, gameConfig.centerY, 50, 50).setOrigin(0.5, 0.5).setStrokeStyle(2, 0xFFFFFF).setDepth(gameConfig.overlayDepth);
+    this.objects.pauseIcon = this.add.image(gameConfig.width - 50, gameConfig.centerY, 'pause').setOrigin(0.5, 0.5).setDisplaySize(40, 40).setDepth(gameConfig.overlayDepth);
 
     this.objects.pauseButton.on('pointerover', () => {this.objects.pauseButton.setScale(1.1)});
     this.objects.pauseButton.on('pointerout', () => {this.objects.pauseButton.setScale(1)});
@@ -67,13 +67,13 @@ class GameScene extends Phaser.Scene {
       this.pause();
     });
 
-    this.objects.pauseBackgound = this.add.rectangle(0, 0, gameConfig.width, gameConfig.height, 0x000000).setOrigin(0, 0).setAlpha(0);
-    this.objects.pauseTextP1 = this.add.text(gameConfig.centerX, gameConfig.centerY * 1.5, "paused", {fontSize: 40, color: '#FFFFFF' }).setOrigin(0.5, 0.5).setAlpha(0);
-    this.objects.pauseTextP2 = this.add.text(gameConfig.centerX, gameConfig.centerY * 0.5, "paused", {fontSize: 40, color: '#FFFFFF' }).setOrigin(0.5, 0.5).setFlip(true, true).setAlpha(0);
-    this.objects.continueButton = this.add.rectangle(gameConfig.centerX - 90, gameConfig.centerY, 120, 120).setOrigin(0.5, 0.5).setStrokeStyle(8, 0xFFFFFF).setAlpha(0);
-    this.objects.continueIcon = this.add.image(gameConfig.centerX - 90, gameConfig.centerY, 'play').setOrigin(0.5, 0.5).setDisplaySize(80, 80).setAlpha(0);
-    this.objects.quitButton = this.add.rectangle(gameConfig.centerX + 90, gameConfig.centerY, 120, 120).setOrigin(0.5, 0.5).setStrokeStyle(8, 0xFFFFFF).setAlpha(0);
-    this.objects.quitIcon = this.add.image(gameConfig.centerX + 90, gameConfig.centerY, 'quit').setOrigin(0.5, 0.5).setDisplaySize(80, 80).setAlpha(0);
+    this.objects.pauseBackgound = this.add.rectangle(0, 0, gameConfig.width, gameConfig.height, 0x000000).setOrigin(0, 0).setAlpha(0).setDepth(gameConfig.overlayDepth);
+    this.objects.pauseTextP1 = this.add.text(gameConfig.centerX, gameConfig.centerY * 1.5, "paused", {fontSize: 40, color: '#FFFFFF'}).setOrigin(0.5, 0.5).setAlpha(0).setDepth(gameConfig.overlayDepth);
+    this.objects.pauseTextP2 = this.add.text(gameConfig.centerX, gameConfig.centerY * 0.5, "paused", {fontSize: 40, color: '#FFFFFF'}).setOrigin(0.5, 0.5).setFlip(true, true).setAlpha(0).setDepth(gameConfig.overlayDepth);
+    this.objects.continueButton = this.add.rectangle(gameConfig.centerX - 90, gameConfig.centerY, 120, 120).setOrigin(0.5, 0.5).setStrokeStyle(8, 0xFFFFFF).setAlpha(0).setDepth(gameConfig.overlayDepth);
+    this.objects.continueIcon = this.add.image(gameConfig.centerX - 90, gameConfig.centerY, 'play').setOrigin(0.5, 0.5).setDisplaySize(80, 80).setAlpha(0).setDepth(gameConfig.overlayDepth);
+    this.objects.quitButton = this.add.rectangle(gameConfig.centerX + 90, gameConfig.centerY, 120, 120).setOrigin(0.5, 0.5).setStrokeStyle(8, 0xFFFFFF).setAlpha(0).setDepth(gameConfig.overlayDepth);
+    this.objects.quitIcon = this.add.image(gameConfig.centerX + 90, gameConfig.centerY, 'quit').setOrigin(0.5, 0.5).setDisplaySize(80, 80).setAlpha(0).setDepth(gameConfig.overlayDepth);
 
     this.objects.continueButton.on('pointerover', () => {this.objects.continueButton.setScale(1.1)});
     this.objects.continueButton.on('pointerout', () => {this.objects.continueButton.setScale(1)});
@@ -121,7 +121,7 @@ class GameScene extends Phaser.Scene {
     this.objects.quitButton.disableInteractive();
 
     this.tweens.add({
-      targets: this.add.rectangle(0, 0, gameConfig.width, gameConfig.height, 0x000000, 0).setOrigin(0, 0),
+      targets: this.add.rectangle(0, 0, gameConfig.width, gameConfig.height, 0x000000, 0).setOrigin(0, 0).setDepth(gameConfig.overlayDepth),
       fillAlpha: 1,
       duration: 500,
       onComplete: () => {
@@ -294,8 +294,8 @@ class GameScene extends Phaser.Scene {
     this.objects.paddles.stopTrails();
     this.objects.powerUps.stopEffects();
 
-    this.objects.p1ScoreText.setDepth(1);
-    this.objects.p2ScoreText.setDepth(1);
+    this.objects.p1ScoreText.setDepth(gameConfig.overlayDepth + 1);
+    this.objects.p2ScoreText.setDepth(gameConfig.overlayDepth + 1);
 
     this.tweens.add({
       targets: [this.objects.p1ScoreText, this.objects.p2ScoreText],
@@ -324,18 +324,18 @@ class GameScene extends Phaser.Scene {
       delay: 500
     });
 
-    this.objects.resultBackground = this.add.rectangle(0, 0, gameConfig.width, gameConfig.height, 0x000000, 0.7).setOrigin(0, 0).setAlpha(0);
-    this.objects.p1Result = this.add.text(gameConfig.centerX, gameConfig.centerY * 1.5, p1Win ? "Win" : "Lose", {fontSize: 120, color: '#FFFFFF'}).setOrigin(0.5, 0.5).setAlpha(0);
-    this.objects.p2Result = this.add.text(gameConfig.centerX, gameConfig.centerY * 0.5, p1Win ? "Lose" : "Win", {fontSize: 120, color: '#FFFFFF'}).setOrigin(0.5, 0.5).setFlip(true, true).setAlpha(0);
+    this.objects.resultBackground = this.add.rectangle(0, 0, gameConfig.width, gameConfig.height, 0x000000, 0.7).setOrigin(0, 0).setAlpha(0).setDepth(gameConfig.overlayDepth);
+    this.objects.p1Result = this.add.text(gameConfig.centerX, gameConfig.centerY * 1.5, p1Win ? "Win" : "Lose", {fontSize: 120, color: '#FFFFFF'}).setOrigin(0.5, 0.5).setAlpha(0).setDepth(gameConfig.overlayDepth);
+    this.objects.p2Result = this.add.text(gameConfig.centerX, gameConfig.centerY * 0.5, p1Win ? "Lose" : "Win", {fontSize: 120, color: '#FFFFFF'}).setOrigin(0.5, 0.5).setFlip(true, true).setAlpha(0).setDepth(gameConfig.overlayDepth);
 
-    this.objects.endMatchButton = this.add.rectangle(gameConfig.width - 50, gameConfig.centerY, 50, 50).setOrigin(0.5, 0.5).setStrokeStyle(2, 0xFFFFFF).setAlpha(0);
-    this.objects.endMatchIcon = this.add.image(gameConfig.width - 50, gameConfig.centerY, 'quit').setOrigin(0.5, 0.5).setDisplaySize(40, 40).setAlpha(0);
+    this.objects.endMatchButton = this.add.rectangle(gameConfig.width - 50, gameConfig.centerY, 50, 50).setOrigin(0.5, 0.5).setStrokeStyle(2, 0xFFFFFF).setAlpha(0).setDepth(gameConfig.overlayDepth);
+    this.objects.endMatchIcon = this.add.image(gameConfig.width - 50, gameConfig.centerY, 'quit').setOrigin(0.5, 0.5).setDisplaySize(40, 40).setAlpha(0).setDepth(gameConfig.overlayDepth);
 
     this.objects.endMatchButton.on('pointerover', () => {this.objects.endMatchButton.setScale(1.1)});
     this.objects.endMatchButton.on('pointerout', () => {this.objects.endMatchButton.setScale(1)});
     this.objects.endMatchButton.once('pointerup', () => {
       this.tweens.add({
-        targets: this.add.rectangle(0, 0, gameConfig.width, gameConfig.height, 0x000000, 0).setOrigin(0, 0).setDepth(2),
+        targets: this.add.rectangle(0, 0, gameConfig.width, gameConfig.height, 0x000000, 0).setOrigin(0, 0).setDepth(gameConfig.overlayDepth + 2),
         fillAlpha: 1,
         duration: 500,
         onComplete: () => {

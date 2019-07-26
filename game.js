@@ -5,6 +5,8 @@ gameConfig.height = 800;
 gameConfig.centerX = gameConfig.width / 2;
 gameConfig.centerY = gameConfig.height / 2;
 
+gameConfig.overlayDepth = 1;
+
 gameConfig.pointsToWin = 3;
 
 gameConfig.paddleWidth = 120;
