@@ -27,6 +27,7 @@ class Paddle extends Phaser.Physics.Arcade.Sprite {
 
     this.trueScaleX = 1;
     this.scaleXDebt = 0;
+    this.scaleXTween;
 
     this.isPowerful = false;
     this.powerfulSet = 0;
@@ -50,6 +51,10 @@ class Paddle extends Phaser.Physics.Arcade.Sprite {
       alpha: 0.2,
       rotate: {start: 0, end: 360}
     });
+
+    this.isInvisible = false;
+    this.invisibleSet = 0;
+    this.alphaTween;
   }
 
   notifyPowerUp(type) {
@@ -110,8 +115,10 @@ class Paddle extends Phaser.Physics.Arcade.Sprite {
       this.trueScaleX = gameConfig.paddleMinScaleX;
     }
 
-    this.scene.tweens.killTweensOf(this);
-    this.scene.tweens.add({
+    if (this.scaleXTween) {
+      this.scaleXTween.remove();
+    }
+    this.scaleXTween = this.scene.tweens.add({
       targets: this,
       scaleX: this.trueScaleX,
       duration: 500,
@@ -192,6 +199,58 @@ class Paddle extends Phaser.Physics.Arcade.Sprite {
       this.snowEffect.stop();
     }
   }
+
+  beginInvisible() {
+    this.isInvisible = true;
+    this.invisibleSet++;
+
+    if (this.alphaTween) {
+      this.alphaTween.remove();
+    }
+    this.alphaTween = this.scene.tweens.add({
+      targets: this,
+      alpha: 0,
+      duration: 500,
+      onComplete: () => {
+        this.trail.stop();
+      }
+    });
+  }
+
+  endInvisible(force = false) {
+    if (force) {
+      this.invisibleSet = 0;
+      this.isInvisible = false;
+    } else if (--this.invisibleSet == 0) {
+      this.isInvisible = false;
+
+      if (this.alphaTween) {
+        this.alphaTween.remove();
+      }
+      this.alphaTween = this.scene.tweens.add({
+        targets: this,
+        alpha: 1,
+        duration: 500,
+        onComplete: () => {
+          this.trail.start();
+        }
+      });
+    }
+  }
+
+  ballContactWhenInvisible() {
+    if (this.alphaTween) {
+      this.alphaTween.remove();
+    }
+
+    this.setAlpha(1);
+
+    this.alphaTween = this.scene.tweens.add({
+      targets: this,
+      alpha: 0,
+      duration: 500
+    });
+  }
 }
 
 class Paddles {
@@ -239,6 +298,7 @@ class Paddles {
     this.resetPowerful();
     this.resetWalled();
     this.resetSnowed();
+    this.resetInvisible();
   }
 
   resetPowerful() {
@@ -254,5 +314,10 @@ class Paddles {
   resetSnowed() {
     this.p1.endSnowed(true);
     this.p2.endSnowed(true);
+  }
+
+  resetInvisible() {
+    this.p1.endInvisible(true);
+    this.p2.endInvisible(true);
   }
 }

@@ -69,5 +69,6 @@ PowerUps.types = {
   POWERFUL: "powerful",
   WALL: "wall",
   SNOW: "snow",
-  POINT: "point"
+  POINT: "point",
+  INVIPADDLE: "invipaddle"
 }

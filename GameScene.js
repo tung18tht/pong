@@ -390,6 +390,7 @@ class GameScene extends Phaser.Scene {
       y: gameConfig.centerY,
       scaleX: 2,
       scaleY: 2,
+      alpha: 1,
       duration: 1000,
       delay: 1000,
       onComplete: () => {this.objects.effects.endMatch.start()}
@@ -443,6 +444,10 @@ class GameScene extends Phaser.Scene {
   }
 
   ballPaddleCollide(ball, paddle) {
+    if (paddle.isInvisible) {
+      paddle.ballContactWhenInvisible();
+    }
+
     ball.fromPaddle = paddle;
     this.objects.effects.explodeBallCollisionEffect(ball, paddle);
 
@@ -490,6 +495,10 @@ class GameScene extends Phaser.Scene {
   }
 
   ballPaddleOverlap(ball, paddle) {
+    if (paddle.isInvisible) {
+      paddle.ballContactWhenInvisible();
+    }
+
     if (ball.x > paddle.x) {
       if (ball.body.velocity.x < 0) {
         this.objects.effects.ballLeftCollision.emitParticleAt(paddle.body.right, ball.y);
@@ -598,6 +607,18 @@ class GameScene extends Phaser.Scene {
           delay: 2000
         });
 
+        break;
+
+      case PowerUps.types.INVIPADDLE:
+        var targetPaddle = ball.fromPaddle;
+        targetPaddle.notifyPowerUp(powerUp.type);
+
+        targetPaddle.beginInvisible();
+        this.time.addEvent({
+          delay: gameConfig.powerUpsDuration, callback: () => {
+            targetPaddle.endInvisible();
+          }
+        });
         break;
     }
 
