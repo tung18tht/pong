@@ -10,14 +10,35 @@ class PowerUp extends Phaser.GameObjects.Image {
 
     this.setOrigin(0.5, 0.5).setDisplaySize(PowerUps.constants.powerUpsDiameter, PowerUps.constants.powerUpsDiameter);
 
+    var effectMaxLifespan = 300;
+    var effectSpeed = {min: 15, max: 20};
+    var effectScale = 0.2;
+    var effectAlpha = 0.25;
+
+    if (type == PowerUps.types.POINT) {
+      this.scaleTween = scene.tweens.add({
+        targets: this,
+        displayWidth: PowerUps.constants.powerUpsDiameter * 1.5,
+        displayHeight: PowerUps.constants.powerUpsDiameter * 1.5,
+        yoyo: true,
+        repeat: -1,
+        duration: 1000
+      });
+
+      effectMaxLifespan = 500;
+      effectSpeed = {min: 25, max: 50};
+      effectScale = 0.25;
+      effectAlpha = 0.5;
+    }
+
     this.effect = scene.objects.effects.createEmitter({
       x: x,
       y: y,
       quantity: 2,
-      lifespan: {min: 250, max: 300},
-      speed: {min: 15, max: 20},
-      scale: 0.2,
-      alpha: {start: 0.25, end: 0},
+      lifespan: {min: 250, max: effectMaxLifespan},
+      speed: effectSpeed,
+      scale: effectScale,
+      alpha: {start: effectAlpha, end: 0},
       emitCallback: (particle) => {
         var newX = this.body.halfWidth * Math.cos(Math.atan2(particle.velocityY, particle.velocityX));
         var newY = Math.sqrt((this.body.halfWidth ** 2) - (newX ** 2));
@@ -36,21 +57,27 @@ class PowerUp extends Phaser.GameObjects.Image {
       duration: 3000
     });
 
-    if (type == PowerUps.types.POINT) {
-      this.scaleTween = scene.tweens.add({
-        targets: this,
-        displayWidth: PowerUps.constants.powerUpsDiameter * 1.5,
-        displayHeight: PowerUps.constants.powerUpsDiameter * 1.5,
-        yoyo: true,
-        repeat: -1,
-        duration: 1000
-      });
-
-      this.effect.setLifespan({min: 250, max: 500});
-      this.effect.setSpeed({min: 25, max: 50});
-      this.effect.setScale(0.25);
-      this.effect.setAlpha({start: 0.5, end: 0});
-    }
+    this.alphaTween = scene.tweens.add({
+      targets: this,
+      alpha: 0,
+      yoyo: true,
+      repeat: 2,
+      duration: 500,
+      delay: 6500,
+      onUpdate: () => {
+        this.effect.setAlpha({start: effectAlpha * this.alpha, end: 0});
+      },
+      onComplete: () => {
+        scene.tweens.add({
+          targets: this,
+          alpha: 0,
+          duration: 500,
+          onStart: () => {
+            this.effect.stop();
+          }
+        });
+      }
+    });
 
     this.selfDestroyEvent = scene.time.addEvent({
       delay: gameConfig.powerUpsLifespan, callback: () => {
@@ -72,9 +99,10 @@ class PowerUp extends Phaser.GameObjects.Image {
     if (this.scene) {
       this.scene.objects.effects.removeEmitter(this.effect);
       this.tween.remove();
+      this.alphaTween.remove();
       this.selfDestroyEvent.remove();
 
-      if (this.type == PowerUps.types.POINT) {
+      if (this.scaleTween) {
         this.scaleTween.remove();
       }
     }
