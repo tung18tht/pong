@@ -421,6 +421,8 @@ class GameScene extends Phaser.Scene {
     }
 
     if (up || down) {
+      ball.gameObject.endInvisible(true);
+
       this.objects.effects.explosion.explode(1000, ball.gameObject.x, ball.gameObject.y);
 
       if (lastPoint) {
@@ -524,6 +526,15 @@ class GameScene extends Phaser.Scene {
       case PowerUps.types.EXPLODE:
         this.objects.balls.remove(ball);
         this.objects.effects.explosion.explode(100, ball.x, ball.y);
+        break;
+
+      case PowerUps.types.INVIBALL:
+        ball.beginInvisible();
+        ball.events.push(this.time.addEvent({
+          delay: gameConfig.powerUpsDuration, callback: () => {
+            ball.endInvisible();
+          }
+        }));
         break;
 
       case PowerUps.types.EXPAND:

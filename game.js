@@ -64,6 +64,7 @@ PowerUps.constants = {
 PowerUps.types = {
   X2: "x2",
   EXPLODE: "explode",
+  INVIBALL: "inviball",
   EXPAND: "expand",
   SHRINK: "shrink",
   POWERFUL: "powerful",

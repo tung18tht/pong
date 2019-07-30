@@ -16,11 +16,69 @@ class Ball extends Phaser.Physics.Arcade.Sprite {
       scale: {start: 1, end: 0},
       alpha: {start: 0.2, end: 0}
     });
+
+    this.events = [];
+
+    this.invisibleSet = 0;
+    this.alphaTween;
+  }
+
+  beginInvisible() {
+    if (this.invisibleSet++ == 0) {
+      if (this.alphaTween) {
+        this.alphaTween.remove();
+      }
+
+      this.setAlpha(1);
+      this.trail.setAlpha({start: 0.2, end: 0});
+
+      this.alphaTween = this.scene.tweens.add({
+        targets: this,
+        alpha: 0.15,
+        yoyo: true,
+        repeat: -1,
+        duration: 1000,
+        hold: 1000,
+        onUpdate: () => {
+          this.trail.setAlpha({start: 0.2 * this.alpha, end: 0});
+        }
+      });
+    }
+  }
+
+  endInvisible(force = false) {
+    if (force) {
+      this.invisibleSet = 0;
+      if (this.alphaTween) {
+        this.alphaTween.remove();
+      }
+      this.setAlpha(1);
+      this.trail.setAlpha({start: 0.2, end: 0});
+    } else if (--this.invisibleSet == 0) {
+      if (this.alphaTween) {
+        this.alphaTween.remove();
+      }
+
+      this.alphaTween = this.scene.tweens.add({
+        targets: this,
+        alpha: 1,
+        duration: 500,
+        onUpdate: () => {
+          this.trail.setAlpha({start: 0.2 * this.alpha, end: 0});
+        }
+      });
+    }
   }
 
   destroy(fromScene) {
     if (this.scene) {
       this.scene.objects.effects.removeEmitter(this.trail);
+
+      this.events.forEach(event => event.remove());
+
+      if (this.alphaTween) {
+        this.alphaTween.remove();
+      }
     }
 
     super.destroy(fromScene);
@@ -86,6 +144,7 @@ class Balls {
   }
 
   setupForNewRound() {
+    this.mainBall.endInvisible(true);
     this.mainBall.setAlpha(0);
     this.mainBall.setPosition(gameConfig.centerX, gameConfig.centerY);
     this.mainBall.trail.stop();
