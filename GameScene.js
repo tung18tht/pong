@@ -422,6 +422,7 @@ class GameScene extends Phaser.Scene {
 
     if (up || down) {
       ball.gameObject.endInvisible(true);
+      this.objects.paddles.resetInvisible();
 
       this.objects.effects.explosion.explode(1000, ball.gameObject.x, ball.gameObject.y);
 

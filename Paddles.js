@@ -221,6 +221,11 @@ class Paddle extends Phaser.Physics.Arcade.Sprite {
     if (force) {
       this.invisibleSet = 0;
       this.isInvisible = false;
+      if (this.alphaTween) {
+        this.alphaTween.remove();
+      }
+      this.setAlpha(1);
+      this.trail.start();
     } else if (--this.invisibleSet == 0) {
       this.isInvisible = false;
 
@@ -286,6 +291,11 @@ class Paddles {
   }
 
   setupForNewRound() {
+    this.resetPowerful();
+    this.resetWalled();
+    this.resetSnowed();
+    this.resetInvisible();
+
     this.p1.setAlpha(0);
     this.p2.setAlpha(0);
 
@@ -294,11 +304,6 @@ class Paddles {
 
     this.stopTrails();
     this.setupNewRoundScale();
-
-    this.resetPowerful();
-    this.resetWalled();
-    this.resetSnowed();
-    this.resetInvisible();
   }
 
   resetPowerful() {
