@@ -29,7 +29,6 @@ class Paddle extends Phaser.Physics.Arcade.Sprite {
     this.scaleXDebt = 0;
     this.scaleXTween;
 
-    this.isPowerful = false;
     this.powerfulSet = 0;
     this.powerfulIcon = scene.add.image(this.x, this.y, PowerUps.types.POWERFUL + 'nobound').setOrigin(0.5, 0.5).setDisplaySize(gameConfig.paddleHeight, gameConfig.paddleHeight).setTint(0x000000).setAlpha(0);
 
@@ -37,7 +36,6 @@ class Paddle extends Phaser.Physics.Arcade.Sprite {
     this.wallRight = scene.physics.add.sprite(gameConfig.width, p1 ? gameConfig.height - gameConfig.paddleHeight : gameConfig.paddleHeight, "paddle").setOrigin(0, 0.5).setImmovable(true).setDisplaySize(gameConfig.centerX, this.body.halfHeight);
     this.wallSet = 0;
 
-    this.isSnowed = false;
     this.snowSet = 0;
     this.snowEffect = scene.objects.effects.snow.createEmitter({
       on: false,
@@ -52,7 +50,6 @@ class Paddle extends Phaser.Physics.Arcade.Sprite {
       rotate: {start: 0, end: 360}
     });
 
-    this.isInvisible = false;
     this.invisibleSet = 0;
     this.alphaTween;
   }
@@ -100,7 +97,7 @@ class Paddle extends Phaser.Physics.Arcade.Sprite {
       }
     }
 
-    if (this.isPowerful) {
+    if (this.powerfulSet > 0) {
       this.powerfulIcon.x = this.x;
     }
   }
@@ -130,7 +127,6 @@ class Paddle extends Phaser.Physics.Arcade.Sprite {
   }
 
   beginPowerful() {
-    this.isPowerful = true;
     this.powerfulSet++;
     this.powerfulIcon.setAlpha(1);
   }
@@ -143,7 +139,6 @@ class Paddle extends Phaser.Physics.Arcade.Sprite {
     }
 
     if (this.powerfulSet == 0) {
-      this.isPowerful = false;
       this.powerfulIcon.setAlpha(0);
     }
   }
@@ -182,7 +177,6 @@ class Paddle extends Phaser.Physics.Arcade.Sprite {
   }
 
   beginSnowed() {
-    this.isSnowed = true;
     this.snowSet++;
     this.snowEffect.start();
   }
@@ -195,13 +189,11 @@ class Paddle extends Phaser.Physics.Arcade.Sprite {
     }
 
     if (this.snowSet == 0) {
-      this.isSnowed = false;
       this.snowEffect.stop();
     }
   }
 
   beginInvisible() {
-    this.isInvisible = true;
     this.invisibleSet++;
 
     if (this.alphaTween) {
@@ -220,15 +212,12 @@ class Paddle extends Phaser.Physics.Arcade.Sprite {
   endInvisible(force = false) {
     if (force) {
       this.invisibleSet = 0;
-      this.isInvisible = false;
       if (this.alphaTween) {
         this.alphaTween.remove();
       }
       this.setAlpha(1);
       this.trail.start();
     } else if (--this.invisibleSet == 0) {
-      this.isInvisible = false;
-
       if (this.alphaTween) {
         this.alphaTween.remove();
       }

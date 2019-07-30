@@ -137,7 +137,7 @@ class GameScene extends Phaser.Scene {
 
     var [posYVelocityBall, negYVelocityBall] = this.objects.balls.getMostDeadlyBalls();
 
-    if (this.objects.paddles.p1.isSnowed) {
+    if (this.objects.paddles.p1.snowSet > 0) {
       this.objects.paddles.p1.move(this.input.x, delta, gameConfig.powerUpsSnow);
       // this.objects.paddles.p1.move(posYVelocityBall.x, delta, gameConfig.powerUpsSnow);
     } else {
@@ -145,7 +145,7 @@ class GameScene extends Phaser.Scene {
       // this.objects.paddles.p1.move(posYVelocityBall.x, delta);
     }
 
-    if (this.objects.paddles.p2.isSnowed) {
+    if (this.objects.paddles.p2.snowSet > 0) {
       this.objects.paddles.p2.move(negYVelocityBall.x, delta, gameConfig.powerUpsSnow);
     } else {
       this.objects.paddles.p2.move(negYVelocityBall.x, delta);
@@ -447,7 +447,7 @@ class GameScene extends Phaser.Scene {
   }
 
   ballPaddleCollide(ball, paddle) {
-    if (paddle.isInvisible) {
+    if (paddle.invisibleSet > 0) {
       paddle.ballContactWhenInvisible();
     }
 
@@ -486,7 +486,7 @@ class GameScene extends Phaser.Scene {
     }
 
     var newVelocity = ball.body.speed * gameConfig.ballBounce;
-    if (paddle.isPowerful) {
+    if (paddle.powerfulSet > 0) {
       newVelocity *= gameConfig.powerUpsPowerful;
     }
     if (newVelocity > gameConfig.ballMaxVelocity) {
@@ -498,7 +498,7 @@ class GameScene extends Phaser.Scene {
   }
 
   ballPaddleOverlap(ball, paddle) {
-    if (paddle.isInvisible) {
+    if (paddle.invisibleSet > 0) {
       paddle.ballContactWhenInvisible();
     }
 
