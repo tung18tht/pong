@@ -135,7 +135,7 @@ class PowerUps {
               break;
 
             case PowerUps.types.POINT:
-              if (this.pointAvailable && Math.random() < 0.1) {
+              if (this.pointAvailable && Math.random() < 0.2) {
                 this.pointAvailable = false;
                 flag = true;
               }
