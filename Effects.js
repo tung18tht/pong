@@ -3,6 +3,15 @@ class Effects {
     this.particles = scene.add.particles('ball');
     this.snow = scene.add.particles(PowerUps.types.SNOW + 'nobound');
 
+    this.gravity = scene.add.particles('wind').createEmitter({
+      on: false,
+      x: {min: 0, max: gameConfig.width},
+      y: {min: 0, max: gameConfig.height},
+      frequency: 10,
+      lifespan: 1000,
+      alpha: {start: 0.3, end: 0}
+    });
+
     this.ballLeftCollision = this.createEmitter({
       frequency: -1,
       quantity: 10,

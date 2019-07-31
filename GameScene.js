@@ -23,6 +23,12 @@ class GameScene extends Phaser.Scene {
     ballGraphic.generateTexture('ball', gameConfig.ballRadius * 2, gameConfig.ballRadius * 2)
     ballGraphic.destroy();
 
+    var windGraphic = this.add.graphics(0, 0);
+    windGraphic.fillStyle(0xFFFFFF);
+    windGraphic.fillRect(0, 0, 2, 50);
+    windGraphic.generateTexture('wind', 2, 50);
+    windGraphic.destroy();
+
     this.load.image('play', 'assets/play.svg');
     this.load.image('quit', 'assets/quit.svg');
     this.load.image('pause', 'assets/pause.svg');
@@ -491,6 +497,8 @@ class GameScene extends Phaser.Scene {
     }
     if (newVelocity > gameConfig.ballMaxVelocity) {
       newVelocity = gameConfig.ballMaxVelocity;
+    } else if (newVelocity < gameConfig.ballMinVelocity) {
+      newVelocity = gameConfig.ballMinVelocity;
     }
 
     var [velocityX, velocityY] = this.getVelocityXY(Math.abs(newAngle), newVelocity, newAngle < 0);
@@ -632,6 +640,17 @@ class GameScene extends Phaser.Scene {
           }
         });
         break;
+
+      case PowerUps.types.GRAVITY:
+        ball.fromPaddle.notifyPowerUp(powerUp.type);
+
+        var gravityChange = gameConfig.powerUpsGravity * (ball.fromPaddle === this.objects.paddles.p1 ? 1 : -1);
+        this.objects.balls.updateGravityY(gravityChange);
+        this.time.addEvent({
+          delay: gameConfig.powerUpsDuration, callback: () => {
+            this.objects.balls.updateGravityY(-gravityChange);
+          }
+        });
     }
 
     this.objects.effects.powerUpHit.emitParticleAt(powerUp.x, powerUp.y);

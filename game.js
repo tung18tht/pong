@@ -31,6 +31,7 @@ gameConfig.powerUpsExpand = 0.5;
 gameConfig.powerUpsShrink = -0.3;
 gameConfig.powerUpsPowerful = 1.3;
 gameConfig.powerUpsSnow = 200 / 1000;
+gameConfig.powerUpsGravity = 500;
 
 var phaserConfig = {
   width: gameConfig.width,
@@ -71,5 +72,6 @@ PowerUps.types = {
   WALL: "wall",
   SNOW: "snow",
   POINT: "point",
-  INVIPADDLE: "invipaddle"
+  INVIPADDLE: "invipaddle",
+  GRAVITY: "gravity"
 }

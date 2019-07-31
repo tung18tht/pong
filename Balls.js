@@ -121,6 +121,8 @@ class Balls {
     this.mainBall = new Ball(scene, gameConfig.centerX, gameConfig.centerY);
     this.phaserGroup = scene.physics.add.group([this.mainBall]);
     this.children = this.phaserGroup.getChildren();
+
+    this.gravityY = 0;
   }
 
   stopTrails() {
@@ -147,6 +149,8 @@ class Balls {
 
   setupForNewRound() {
     this.mainBall.endInvisible(true);
+    this.updateGravityY(0, true)
+
     this.mainBall.setAlpha(0);
     this.mainBall.setPosition(gameConfig.centerX, gameConfig.centerY);
     this.mainBall.trail.stop();
@@ -183,6 +187,7 @@ class Balls {
   double(ball) {
     var newBall = new Ball(this.scene, ball.x, ball.y);
     newBall.fromPaddle = ball.fromPaddle;
+    newBall.setGravityY(this.gravityY);
     this.phaserGroup.add(newBall);
 
     var originalAngle = ball.body.angle * 180 / Math.PI;
@@ -225,5 +230,29 @@ class Balls {
 
     var [newBallVelocityX, newBallVelocityY] = this.scene.getVelocityXY(Math.abs(newBallAngle), gameConfig.ballInitialVelocity, newBallAngle > 0);
     newBall.setVelocity(newBallVelocityX, newBallVelocityY);
+  }
+
+  updateGravityY(changeValue, force = false) {
+    if (force) {
+      this.gravityY = changeValue;
+    } else {
+      this.gravityY += changeValue;
+    }
+
+    if (this.gravityY == 0) {
+      this.children.forEach(ball => {
+        ball.recomputeAngleVelocity();
+      });
+
+      this.scene.objects.effects.gravity.stop();
+    } else {
+      this.scene.objects.effects.gravity.setSpeed(250 * Math.abs(this.gravityY) / gameConfig.powerUpsGravity);
+      this.scene.objects.effects.gravity.setAngle(this.gravityY > 0 ? 90 : -90);
+      this.scene.objects.effects.gravity.start();
+    }
+
+    this.children.forEach(ball => {
+      ball.setGravityY(this.gravityY);
+    });
   }
 }
