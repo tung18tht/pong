@@ -12,6 +12,16 @@ class Effects {
       alpha: {start: 0.3, end: 0}
     });
 
+    this.smoke = scene.add.particles('smoke_effect').setDepth(gameConfig.overlayDepth).createEmitter({
+      on: false,
+      x: gameConfig.centerX,
+      y: gameConfig.centerY,
+      frequency: 50,
+      lifespan: {min: 2000, max: 3000},
+      speed: {min: 50, max: 100},
+      alpha: {start: 0.3, end: 0}
+    });
+
     this.ballLeftCollision = this.createEmitter({
       frequency: -1,
       quantity: 10,

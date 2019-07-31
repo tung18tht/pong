@@ -8,6 +8,7 @@ class GameScene extends Phaser.Scene {
     this.variables.p1Score = 0;
     this.variables.p2Score = 0;
     this.variables.countdownNumber = 3;
+    this.variables.smokeSet = 0;
 
     this.objects = {};
 
@@ -28,6 +29,8 @@ class GameScene extends Phaser.Scene {
     windGraphic.fillRect(0, 0, 2, 50);
     windGraphic.generateTexture('wind', 2, 50);
     windGraphic.destroy();
+
+    this.load.image('smoke_effect', 'assets/smoke_effect.png');
 
     this.load.image('play', 'assets/play.svg');
     this.load.image('quit', 'assets/quit.svg');
@@ -158,13 +161,7 @@ class GameScene extends Phaser.Scene {
     }
   }
 
-  startNewRound(toSideP1) {
-    this.physics.pause();
-
-    this.objects.balls.setupForNewRound();
-    this.objects.paddles.setupForNewRound();
-    this.objects.powerUps.setupForNewRound();
-
+  setupForNewRound() {
     this.variables.countdownNumber = 3;
     this.objects.countdownP1.setText(this.variables.countdownNumber);
     this.objects.countdownP2.setText(this.variables.countdownNumber);
@@ -176,6 +173,18 @@ class GameScene extends Phaser.Scene {
     this.objects.pauseIcon.setAlpha(0);
     this.objects.pauseButton.setAlpha(0);
     this.objects.pauseButton.disableInteractive();
+
+    this.variables.smokeSet = 0;
+    this.objects.effects.smoke.stop();
+  }
+
+  startNewRound(toSideP1) {
+    this.physics.pause();
+
+    this.setupForNewRound();
+    this.objects.balls.setupForNewRound();
+    this.objects.paddles.setupForNewRound();
+    this.objects.powerUps.setupForNewRound();
 
     this.tweens.add({
       targets: [this.objects.countdownBackground, this.objects.countdownP1, this.objects.countdownP2, this.objects.pauseIcon, this.objects.pauseButton],
@@ -315,10 +324,15 @@ class GameScene extends Phaser.Scene {
       duration: 500,
       delay: 500,
       onComplete: () => {
+        this.objects.effects.smoke.stop();
+
+        this.objects.balls.updateGravityY(0, true);
         this.objects.balls.clear();
+
         this.objects.paddles.resetPowerful();
         this.objects.paddles.resetWalled();
         this.objects.paddles.resetSnowed();
+
         this.objects.powerUps.clear();
       }
     });
@@ -544,6 +558,18 @@ class GameScene extends Phaser.Scene {
             ball.endInvisible();
           }
         }));
+        break;
+
+      case PowerUps.types.SMOKE:
+        this.variables.smokeSet++;
+        this.objects.effects.smoke.start();
+        this.time.addEvent({
+          delay: gameConfig.powerUpsDuration, callback: () => {
+            if (--this.variables.smokeSet == 0) {
+              this.objects.effects.smoke.stop();
+            }
+          }
+        });
         break;
 
       case PowerUps.types.EXPAND:
