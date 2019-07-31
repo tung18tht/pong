@@ -17,6 +17,8 @@ class Ball extends Phaser.Physics.Arcade.Sprite {
       alpha: {start: 0.2, end: 0}
     });
 
+    this.fromPaddle;
+
     this.events = [];
 
     this.invisibleSet = 0;

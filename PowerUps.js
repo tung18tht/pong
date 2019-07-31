@@ -50,47 +50,44 @@ class PowerUp extends Phaser.GameObjects.Image {
       }
     });
 
-    this.tween = scene.tweens.add({
+    this.angleTween = scene.tweens.add({
       targets: this,
       angle: 360,
       repeat: -1,
       duration: 3000
     });
 
-    this.alphaTween = scene.tweens.add({
+    this.destroyingTween = scene.tweens.add({
       targets: this,
       alpha: 0,
       yoyo: true,
       repeat: 2,
       duration: 500,
-      delay: 6500,
+      delay: gameConfig.powerUpsLifespan - 3500,
       onUpdate: () => {
         this.effect.setAlpha({start: effectAlpha * this.alpha, end: 0});
       },
       onComplete: () => {
-        scene.tweens.add({
+        this.destroyingTween = scene.tweens.add({
           targets: this,
           alpha: 0,
           duration: 500,
-          onStart: () => {
-            this.effect.stop();
+          onUpdate: () => {
+            this.effect.setAlpha({start: effectAlpha * this.alpha, end: 0});
+          },
+          onComplete: () => {
+            switch (type) {
+              case PowerUps.types.EXPLODE:
+                scene.objects.powerUps.explodeAvailable++;
+                break;
+              case PowerUps.types.POINT:
+                scene.objects.powerUps.pointAvailable = true;
+                break;
+            }
+
+            this.destroy();
           }
         });
-      }
-    });
-
-    this.selfDestroyEvent = scene.time.addEvent({
-      delay: gameConfig.powerUpsLifespan, callback: () => {
-        switch (type) {
-          case PowerUps.types.EXPLODE:
-            scene.objects.powerUps.explodeAvailable++;
-            break;
-          case PowerUps.types.POINT:
-            scene.objects.powerUps.pointAvailable = true;
-            break;
-        }
-
-        this.destroy();
       }
     });
   }
@@ -98,9 +95,8 @@ class PowerUp extends Phaser.GameObjects.Image {
   destroy(fromScene) {
     if (this.scene) {
       this.scene.objects.effects.removeEmitter(this.effect);
-      this.tween.remove();
-      this.alphaTween.remove();
-      this.selfDestroyEvent.remove();
+      this.angleTween.remove();
+      this.destroyingTween.remove();
 
       if (this.scaleTween) {
         this.scaleTween.remove();
@@ -177,10 +173,6 @@ class PowerUps {
   setupForNewRound() {
     this.explodeAvailable = 0;
 
-    if (this.scene.variables.p1Score < gameConfig.pointsToWin - 1 && this.scene.variables.p2Score < gameConfig.pointsToWin - 1) {
-      this.pointAvailable = true;
-    } else {
-      this.pointAvailable = false;
-    }
+    this.pointAvailable = (this.scene.variables.p1Score < gameConfig.pointsToWin - 1) && (this.scene.variables.p2Score < gameConfig.pointsToWin - 1);
   }
 }

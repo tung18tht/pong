@@ -121,8 +121,8 @@ class GameScene extends Phaser.Scene {
     this.objects.quitButton.disableInteractive();
 
     this.tweens.add({
-      targets: this.add.rectangle(0, 0, gameConfig.width, gameConfig.height, 0x000000, 0).setOrigin(0, 0).setDepth(gameConfig.overlayDepth),
-      fillAlpha: 1,
+      targets: [this.objects.pauseTextP1, this.objects.pauseTextP2, this.objects.continueButton, this.objects.continueIcon, this.objects.quitButton, this.objects.quitIcon],
+      alpha: 0,
       duration: 500,
       onComplete: () => {
         this.scene.start("MenuScene");
@@ -231,7 +231,7 @@ class GameScene extends Phaser.Scene {
 
     this.tweens.add({
       targets: this.objects.balls.mainBall,
-      y: gameConfig.centerY + (toSideP1 ? gameConfig.ballRadius : -gameConfig.ballRadius) * 5,
+      y: gameConfig.centerY + 5 * gameConfig.ballRadius * (toSideP1 ? 1 : -1),
       duration: 1500,
       delay: 1000,
       ease: "Elastic",

@@ -9,6 +9,7 @@ class Paddle extends Phaser.Physics.Arcade.Sprite {
 
     this.setOrigin(0.5, 0.5).setImmovable(true);
 
+    this.trailEmitZone = new Phaser.Geom.Line(-Paddles.constants.defaultHalfTrailWidth, 0, Paddles.constants.defaultHalfTrailWidth, 0);
     this.trail = scene.objects.effects.createEmitter({
       follow: this,
       lifespan: {min: 400, max: 600},
@@ -16,7 +17,7 @@ class Paddle extends Phaser.Physics.Arcade.Sprite {
       scale: 0.3,
       angle: p1 ? {min: 30, max: 150} : {min: 210, max: 330},
       alpha: {start: 0.5, end: 0},
-      emitZone: {source: new Phaser.Geom.Line(-Paddles.constants.defaultHalfTrailWidth, 0, Paddles.constants.defaultHalfTrailWidth, 0)}
+      emitZone: {source: this.trailEmitZone}
     });
 
     this.powerUpsNoti = {};
@@ -119,9 +120,9 @@ class Paddle extends Phaser.Physics.Arcade.Sprite {
       targets: this,
       scaleX: this.trueScaleX,
       duration: 500,
-      onComplete: () => {
+      onUpdate: () => {
         var halfTrailWidth = this.body.halfWidth * 0.8;
-        this.trail.setEmitZone({source: new Phaser.Geom.Line(-halfTrailWidth, 0, halfTrailWidth, 0)});
+        this.trailEmitZone.setTo(-halfTrailWidth, 0, halfTrailWidth, 0);
       }
     });
   }
@@ -203,8 +204,8 @@ class Paddle extends Phaser.Physics.Arcade.Sprite {
       targets: this,
       alpha: 0,
       duration: 500,
-      onComplete: () => {
-        this.trail.stop();
+      onUpdate: () => {
+        this.trail.setAlpha({start: 0.5 * this.alpha, end: 0});
       }
     });
   }
@@ -216,7 +217,7 @@ class Paddle extends Phaser.Physics.Arcade.Sprite {
         this.alphaTween.remove();
       }
       this.setAlpha(1);
-      this.trail.start();
+      this.trail.setAlpha({start: 0.5, end: 0});
     } else if (--this.invisibleSet == 0) {
       if (this.alphaTween) {
         this.alphaTween.remove();
@@ -225,8 +226,8 @@ class Paddle extends Phaser.Physics.Arcade.Sprite {
         targets: this,
         alpha: 1,
         duration: 500,
-        onComplete: () => {
-          this.trail.start();
+        onUpdate: () => {
+          this.trail.setAlpha({start: 0.5 * this.alpha, end: 0});
         }
       });
     }
@@ -242,7 +243,10 @@ class Paddle extends Phaser.Physics.Arcade.Sprite {
     this.alphaTween = this.scene.tweens.add({
       targets: this,
       alpha: 0,
-      duration: 500
+      duration: 500,
+      onUpdate: () => {
+        this.trail.setAlpha({start: 0.5 * this.alpha, end: 0});
+      }
     });
   }
 }
@@ -275,8 +279,8 @@ class Paddles {
     this.p2.trueScaleX = 1;
     this.p2.scaleXDebt = 0;
 
-    this.p1.trail.setEmitZone({source: new Phaser.Geom.Line(-Paddles.constants.defaultHalfTrailWidth, 0, Paddles.constants.defaultHalfTrailWidth, 0)});
-    this.p2.trail.setEmitZone({source: new Phaser.Geom.Line(-Paddles.constants.defaultHalfTrailWidth, 0, Paddles.constants.defaultHalfTrailWidth, 0)});
+    this.p1.trailEmitZone.setTo(-Paddles.constants.defaultHalfTrailWidth, 0, Paddles.constants.defaultHalfTrailWidth, 0);
+    this.p2.trailEmitZone.setTo(-Paddles.constants.defaultHalfTrailWidth, 0, Paddles.constants.defaultHalfTrailWidth, 0);
   }
 
   setupForNewRound() {
