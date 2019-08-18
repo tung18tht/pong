@@ -15,13 +15,13 @@ class GameScene extends Phaser.Scene {
     var paddleGraphic = this.add.graphics(0, 0);
     paddleGraphic.fillStyle(0xFFFFFF);
     paddleGraphic.fillRect(0, 0, gameConfig.paddleWidth, gameConfig.paddleHeight);
-    paddleGraphic.generateTexture('paddle', gameConfig.paddleWidth, gameConfig.paddleHeight)
+    paddleGraphic.generateTexture('paddle', gameConfig.paddleWidth, gameConfig.paddleHeight);
     paddleGraphic.destroy();
 
     var ballGraphic = this.add.graphics(0, 0);
     ballGraphic.fillStyle(0xFFFFFF);
     ballGraphic.fillCircle(gameConfig.ballRadius, gameConfig.ballRadius, gameConfig.ballRadius);
-    ballGraphic.generateTexture('ball', gameConfig.ballRadius * 2, gameConfig.ballRadius * 2)
+    ballGraphic.generateTexture('ball', gameConfig.ballRadius * 2, gameConfig.ballRadius * 2);
     ballGraphic.destroy();
 
     var windGraphic = this.add.graphics(0, 0);
