@@ -59,6 +59,7 @@ class GameScene extends Phaser.Scene {
     this.physics.add.overlap(this.objects.balls.phaserGroup, this.objects.powerUps.phaserGroup, (ball, powerUp) => {this.ballPowerUpOverlap(ball, powerUp)});
 
     this.physics.add.collider(this.objects.balls.phaserGroup, this.objects.paddles.walls, (ball, wall) => {this.objects.effects.explodeBallCollisionEffect(ball, wall)});
+    this.physics.add.collider(this.objects.balls.phaserGroup, this.objects.powerUps.holes, (ball, hole) => {this.objects.effects.explodeBallCollisionEffect(ball, hole)});
 
     this.physics.world.on('worldbounds', (ball, up, down, left, right) => {this.ballWorldCollide(ball, up, down, left, right)});
 
@@ -333,6 +334,7 @@ class GameScene extends Phaser.Scene {
         this.objects.paddles.resetWalled();
         this.objects.paddles.resetSnowed();
 
+        this.objects.powerUps.endHoled(true);
         this.objects.powerUps.clear();
       }
     });
@@ -568,6 +570,15 @@ class GameScene extends Phaser.Scene {
             if (--this.variables.smokeSet == 0) {
               this.objects.effects.smoke.stop();
             }
+          }
+        });
+        break;
+
+      case PowerUps.types.HOLE:
+        this.objects.powerUps.beginHoled();
+        this.time.addEvent({
+          delay: gameConfig.powerUpsDuration, callback: () => {
+            this.objects.powerUps.endHoled();
           }
         });
         break;

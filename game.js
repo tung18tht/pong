@@ -67,6 +67,7 @@ PowerUps.types = {
   EXPLODE: "explode",
   INVIBALL: "inviball",
   SMOKE: "smoke",
+  HOLE: "hole",
   EXPAND: "expand",
   SHRINK: "shrink",
   POWERFUL: "powerful",

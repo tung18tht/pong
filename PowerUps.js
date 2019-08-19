@@ -115,6 +115,13 @@ class PowerUps {
     this.phaserGroup = scene.physics.add.group();
     this.children = this.phaserGroup.getChildren();
 
+    // work around for stupid physics group default behavior
+    var temp = this.scene.physics.add.sprite(0, 0, 'paddle').setOrigin(0, 0.5).setScale(0.7, 1).setImmovable(true);
+    this.holes = scene.physics.add.group([temp]);
+    temp.destroy();
+    this.holeSpawnEvent;
+    this.holeSet = 0;
+
     this.explodeAvailable = 0;
     this.pointAvailable = true;
   }
@@ -171,8 +178,53 @@ class PowerUps {
   }
 
   setupForNewRound() {
+    this.endHoled(true);
+
     this.explodeAvailable = 0;
 
     this.pointAvailable = (this.scene.variables.p1Score < gameConfig.pointsToWin - 1) && (this.scene.variables.p2Score < gameConfig.pointsToWin - 1);
+  }
+
+  beginHoled() {
+    if (this.holeSet++ == 0) {
+      this.holeSpawnEvent = this.scene.time.addEvent({
+        delay: 500, startAt: 500, loop: true, callback: () => {
+          var hole = this.scene.physics.add.sprite(gameConfig.width, gameConfig.centerY, 'paddle').setOrigin(0, 0.5).setScale(0.5, 1).setImmovable(true);
+
+          this.holes.add(hole);
+
+          this.scene.tweens.add({
+            targets: hole,
+            x: -gameConfig.paddleWidth,
+            duration: 2500,
+            onComplete: () => {
+              this.holes.remove(hole, true, true);
+            }
+          });
+        }
+      });
+    }
+  }
+
+  endHoled(force = false) {
+    if ((force || --this.holeSet == 0) && this.holeSpawnEvent) {
+      this.holeSpawnEvent.remove();
+    }
+
+    if (force) {
+      this.holeSet = 0;
+
+      this.holes.getChildren().forEach(hole => {
+        this.scene.tweens.killTweensOf(hole);
+        this.scene.tweens.add({
+          targets: hole,
+          x: -gameConfig.paddleWidth,
+          duration: 2000,
+          onComplete: () => {
+            this.holes.remove(hole, true, true);
+          }
+        });
+      });
+    }
   }
 }
